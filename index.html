@@ -1,0 +1,711 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="format-detection" content="telephone=no">
+<title>Планировщик</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+/* ===== Цвета: берём из темы Telegram, вне Telegram — свои светлые/тёмные ===== */
+:root{
+  --fb-bg:#ffffff; --fb-bg2:#f1f2f6; --fb-text:#15171a; --fb-hint:#8a8f98;
+  --fb-link:#2481cc; --fb-btn:#2481cc; --fb-btn-text:#ffffff;
+  --fb-sep:rgba(0,0,0,.08); --fb-danger:#e5484d;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --fb-bg:#1c1c1e; --fb-bg2:#000000; --fb-text:#f2f2f7; --fb-hint:#8e8e93;
+    --fb-link:#5aa9ff; --fb-btn:#3a8dde; --fb-btn-text:#ffffff;
+    --fb-sep:rgba(255,255,255,.1); --fb-danger:#ff6369;
+  }
+}
+:root{
+  --bg:var(--tg-theme-bg-color, var(--fb-bg));
+  --bg2:var(--tg-theme-secondary-bg-color, var(--fb-bg2));
+  --card:var(--tg-theme-section-bg-color, var(--bg));
+  --text:var(--tg-theme-text-color, var(--fb-text));
+  --hint:var(--tg-theme-hint-color, var(--fb-hint));
+  --link:var(--tg-theme-link-color, var(--fb-link));
+  --accent:var(--tg-theme-accent-text-color, var(--link));
+  --btn:var(--tg-theme-button-color, var(--fb-btn));
+  --btn-text:var(--tg-theme-button-text-color, var(--fb-btn-text));
+  --sep:var(--tg-theme-section-separator-color, var(--fb-sep));
+  --danger:var(--tg-theme-destructive-text-color, var(--fb-danger));
+  --sab:max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px));
+  --tabbar:60px;
+  --r:12px;
+}
+
+/* ===== Основа ===== */
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg2); color:var(--text);
+  font:16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  -webkit-tap-highlight-color:transparent; overscroll-behavior-y:none;
+}
+button{font:inherit; color:inherit; background:none; border:0; padding:0; cursor:pointer}
+button:focus-visible, textarea:focus-visible, input:focus-visible, summary:focus-visible{outline:2px solid var(--btn); outline-offset:2px}
+[hidden]{display:none !important}
+
+.app{max-width:560px; margin:0 auto; padding:0 16px calc(var(--tabbar) + var(--sab) + 24px)}
+
+/* ===== Шапка ===== */
+.top{
+  position:sticky; top:0; z-index:5; background:var(--bg2);
+  display:flex; align-items:center; gap:8px; min-height:56px; padding:8px 0;
+}
+.top h1{flex:1; margin:0; font-size:24px; font-weight:700; letter-spacing:-.01em}
+.icon-btn{width:40px; height:40px; display:grid; place-items:center; border-radius:10px; color:var(--hint)}
+.icon-btn:active{background:var(--sep)}
+.icon-btn svg{width:24px; height:24px}
+
+/* ===== Карточки и строки ===== */
+.sec-h{margin:20px 4px 8px; font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.04em; color:var(--hint)}
+.card{background:var(--card); border-radius:var(--r); padding:14px 16px}
+.card + .card{margin-top:10px}
+.row{display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 0; border-bottom:1px solid var(--sep)}
+.row:last-of-type{border-bottom:0}
+.row span{color:var(--hint)}
+.row b{font-weight:500; text-align:right}
+.hint{margin:10px 0 0; font-size:14px; color:var(--hint)}
+.hint.center{text-align:center; margin:16px 0 0}
+.warn{margin:10px 0 0; padding:10px 12px; border-radius:10px; font-size:14px; color:var(--danger); background:color-mix(in srgb, var(--danger) 12%, transparent)}
+
+.empty{text-align:center; padding:36px 20px}
+.empty svg{width:48px; height:48px; color:var(--btn); opacity:.9}
+.empty h2{margin:12px 0 4px; font-size:19px}
+.empty p{margin:0; color:var(--hint)}
+
+/* ===== Кнопки и поля ===== */
+.btn, .btn-line{display:block; width:100%; padding:13px 16px; border-radius:10px; font-weight:600; text-align:center}
+.btn{background:var(--btn); color:var(--btn-text)}
+.btn-line{background:var(--bg2); color:var(--link)}
+.btn + .btn-line, .btn-line + .btn-line, .btn-line + input + .btn-line{margin-top:8px}
+.btn:active, .btn-line:active{opacity:.75}
+textarea{
+  display:block; width:100%; min-height:84px; resize:vertical;
+  padding:10px 12px; border:0; border-radius:10px;
+  background:var(--bg2); color:var(--text); font:inherit; font-size:16px;
+}
+textarea::placeholder{color:var(--hint)}
+details{margin-top:12px}
+summary{cursor:pointer; color:var(--link); font-size:15px; padding:4px 0}
+details textarea{margin:8px 0}
+
+/* ===== Нижние вкладки ===== */
+.tabbar{
+  position:fixed; left:0; right:0; bottom:0; z-index:10;
+  background:var(--bg); border-top:1px solid var(--sep); padding-bottom:var(--sab);
+}
+.tabbar__in{max-width:560px; margin:0 auto; display:grid; grid-template-columns:repeat(3, 1fr); height:var(--tabbar)}
+.tab{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; color:var(--hint); font-size:12px; font-weight:500}
+.tab svg{width:26px; height:26px}
+.tab.on{color:var(--btn)}
+
+/* ===== Сообщения ===== */
+.toast{
+  position:fixed; left:50%; bottom:calc(var(--tabbar) + var(--sab) + 12px); z-index:20;
+  width:min(520px, calc(100% - 32px)); transform:translate(-50%, 12px);
+  padding:12px 14px; border-radius:12px; background:var(--text); color:var(--bg);
+  font-size:15px; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
+}
+.toast.show{opacity:1; transform:translate(-50%, 0)}
+.toast.err{background:var(--danger); color:#fff}
+@media (prefers-reduced-motion: reduce){ .toast{transition:none} }
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <button class="icon-btn" id="btnBack" aria-label="Назад" hidden>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </button>
+    <h1 id="title">Календарь</h1>
+    <button class="icon-btn" id="btnSettings" aria-label="Настройки">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+    </button>
+  </header>
+
+  <main>
+    <!-- Вкладка 1. Календарь (этап 2) -->
+    <section class="screen" id="scr-calendar">
+      <div class="card empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+        <h2 id="todayLine">Сегодня</h2>
+        <p>Календарь появится на этапе 2</p>
+      </div>
+    </section>
+
+    <!-- Вкладка 2. Дела (этап 4) -->
+    <section class="screen" id="scr-habits" hidden>
+      <div class="card empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16.5 9.5"/></svg>
+        <h2>Трекер привычек</h2>
+        <p>Появится на этапе 4</p>
+      </div>
+    </section>
+
+    <!-- Вкладка 3. Идеи (этап 6) -->
+    <section class="screen" id="scr-ideas" hidden>
+      <div class="card empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21.5h4M12 2.5a6.5 6.5 0 0 0-3.8 11.8c.5.4.8 1 .8 1.6V16h6v-.1c0-.6.3-1.2.8-1.6A6.5 6.5 0 0 0 12 2.5z"/></svg>
+        <h2>Идеи</h2>
+        <p>Появятся на этапе 6</p>
+      </div>
+    </section>
+
+    <!-- Настройки (шестерёнка) -->
+    <section class="screen" id="scr-settings" hidden>
+      <h2 class="sec-h">Хранение данных</h2>
+      <div class="card">
+        <div class="row"><span>Где хранятся</span><b id="stWhere">—</b></div>
+        <div class="row"><span>Сверка с облаком</span><b id="stSync">—</b></div>
+        <div class="row"><span>Занято ячеек облака</span><b id="stCells">—</b></div>
+        <div class="row" id="stPendingRow" hidden><span>Ждут отправки в облако</span><b id="stPending">0</b></div>
+        <p class="warn" id="stWarn" hidden></p>
+        <button class="btn-line" id="btnSync" style="margin-top:12px">Сверить с облаком сейчас</button>
+      </div>
+
+      <h2 class="sec-h">Проверка синхронизации</h2>
+      <div class="card">
+        <textarea id="checkNote" rows="3" placeholder="Напишите здесь что-нибудь…" spellcheck="false" autocorrect="off"></textarea>
+        <p class="hint">Напишите пару слов на телефоне, подождите 2–3 секунды, потом откройте приложение на ноутбуке — текст должен появиться и там.</p>
+      </div>
+
+      <h2 class="sec-h">Резервная копия</h2>
+      <div class="card">
+        <button class="btn" id="btnExport">Скачать мои данные</button>
+        <button class="btn-line" id="btnCopy">Скопировать как текст</button>
+        <button class="btn-line" id="btnImport">Загрузить из файла</button>
+        <input type="file" id="fileImport" accept=".json,application/json,text/plain" hidden>
+        <details>
+          <summary>Вставить копию из текста</summary>
+          <textarea id="pasteImport" rows="4" placeholder="Вставьте сюда скопированный текст копии" spellcheck="false" autocorrect="off"></textarea>
+          <button class="btn-line" id="btnPaste">Загрузить из текста</button>
+        </details>
+        <p class="hint">Копия — это все задачи, привычки, идеи и дневник одним файлом. Удобно хранить её в «Избранном» Telegram.</p>
+      </div>
+
+      <p class="hint center">Шкала времени, помодоро и цели привычек появятся здесь на следующих этапах.</p>
+      <p class="hint center">Версия: этап 1 · каркас</p>
+    </section>
+  </main>
+</div>
+
+<nav class="tabbar" aria-label="Разделы">
+  <div class="tabbar__in" role="tablist">
+    <button class="tab on" data-tab="calendar" role="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+      Календарь
+    </button>
+    <button class="tab" data-tab="habits" role="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16.5 9.5"/></svg>
+      Дела
+    </button>
+    <button class="tab" data-tab="ideas" role="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21.5h4M12 2.5a6.5 6.5 0 0 0-3.8 11.8c.5.4.8 1 .8 1.6V16h6v-.1c0-.6.3-1.2.8-1.6A6.5 6.5 0 0 0 12 2.5z"/></svg>
+      Идеи
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ================= Telegram ================= */
+const tg = window.Telegram && window.Telegram.WebApp;
+const ver = v => !!(tg && tg.isVersionAtLeast && tg.isVersionAtLeast(v));
+const inTG = !!(tg && tg.initData);                       // открыто внутри Telegram
+const hasCloud = inTG && ver('6.9') && !!tg.CloudStorage;  // облако Telegram доступно
+const uid = (inTG && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id) || 'local';
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const pad = n => String(n).padStart(2, '0');
+const isoDate = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+const haptic = {
+  tap()  { try { if (inTG && ver('6.1')) tg.HapticFeedback.selectionChanged(); } catch (e) {} },
+  ok()   { try { if (inTG && ver('6.1')) tg.HapticFeedback.notificationOccurred('success'); } catch (e) {} },
+  err()  { try { if (inTG && ver('6.1')) tg.HapticFeedback.notificationOccurred('error'); } catch (e) {} },
+};
+
+let toastTimer;
+function toast(msg, kind) {
+  const el = $('#toast');
+  el.textContent = msg;
+  el.className = 'toast show' + (kind ? ' ' + kind : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, kind === 'err' ? 5000 : 3200);
+}
+
+function ask(msg) {
+  return new Promise(resolve => {
+    try {
+      if (inTG && ver('6.2')) return tg.showConfirm(msg, ok => resolve(!!ok));
+    } catch (e) {}
+    resolve(window.confirm(msg));
+  });
+}
+
+/* ================= Хранение =================
+   Ключи облака (разрешены только латиница, цифры, _ и -, поэтому «_» вместо «:»):
+     settings          — настройки
+     day_2026-11-03    — день: задачи, расписание, дневник, настроение
+     hm_2026-11        — отметки привычек за месяц
+     habits, recur, ideas — список привычек, повторяющиеся задачи, идеи
+     check             — заметка для проверки синхронизации (этап 1)
+   В ячейке до 4096 символов. Длинное значение делится на части:
+     в основной ячейке «#parts:3», сами части — ключ__1, ключ__2, ключ__3.
+   Сначала всё пишется на устройство (localStorage) — сразу, в облако — через 1 с после последнего изменения.
+   Правило сверки: что не успело уйти в облако — новее облака; остальное берём из облака. */
+const Store = (() => {
+  const P = `pl:${uid}:`;              // данные на устройстве
+  const DIRTY = `pl~dirty:${uid}`;     // что ещё не отправлено в облако: ключ → время изменения
+  const SYNCED = `pl~synced:${uid}`;   // время последней сверки
+  const HEAD = '#parts:';
+  const CHUNK = 3800, LIMIT = 1024, WARN_AT = 900, BATCH = 40;
+
+  const data = Object.create(null);
+  const rev = Object.create(null);     // номер правки ключа (чтобы не потерять правку во время отправки)
+  const timers = Object.create(null);
+  const queued = new Set();
+  let dirty = {};
+  let cloudKeys = null;                // ключи, которые сейчас лежат в облаке
+  let lastSync = 0, lastError = '', syncing = null, chain = Promise.resolve();
+  let errToastAt = 0;
+  const listeners = [];
+  const emit = what => listeners.forEach(fn => { try { fn(what); } catch (e) { console.error(e); } });
+
+  const lsRead = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const lsWrite = (k, v) => { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } };
+  const lsRemove = k => { try { localStorage.removeItem(k); } catch (e) {} };
+  const saveDirty = () => lsWrite(DIRTY, JSON.stringify(dirty));
+
+  function loadLocal() {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith(P)) continue;
+        try { data[k.slice(P.length)] = JSON.parse(localStorage.getItem(k)); } catch (e) {}
+      }
+    } catch (e) {}
+    try { dirty = JSON.parse(lsRead(DIRTY)) || {}; } catch (e) { dirty = {}; }
+    lastSync = +lsRead(SYNCED) || 0;
+  }
+
+  function failed(e, where) {
+    console.warn('[storage]', where, e);
+    lastError = (e && e.message) || String(e);
+    if (Date.now() - errToastAt > 20000) {
+      errToastAt = Date.now();
+      toast(where === 'sync'
+        ? 'Не получилось связаться с облаком Telegram. Показываю данные с этого устройства.'
+        : 'Не получилось сохранить в облако Telegram. На устройстве всё сохранено — отправлю позже сам.', 'err');
+    }
+  }
+
+  /* --- обёртки над облаком Telegram (с ограничением по времени) --- */
+  function cs(method, ...args) {
+    return new Promise((resolve, reject) => {
+      let done = false;
+      const t = setTimeout(() => { if (!done) { done = true; reject(new Error('нет ответа от Telegram')); } }, 12000);
+      try {
+        tg.CloudStorage[method](...args, (err, res) => {
+          if (done) return;
+          done = true; clearTimeout(t);
+          err ? reject(new Error(String(err))) : resolve(res);
+        });
+      } catch (e) { done = true; clearTimeout(t); reject(e); }
+    });
+  }
+  const isPart = k => /__\d+$/.test(k);
+  const partsOf = key => cloudKeys
+    ? [...cloudKeys].filter(k => k.startsWith(key + '__') && /^\d+$/.test(k.slice(key.length + 2)))
+    : [];
+  function split(str) {                // режем на куски, не разрывая смайлики
+    const out = [];
+    for (let i = 0; i < str.length;) {
+      let j = Math.min(i + CHUNK, str.length);
+      const c = str.charCodeAt(j - 1);
+      if (j < str.length && c >= 0xD800 && c <= 0xDBFF) j--;
+      out.push(str.slice(i, j)); i = j;
+    }
+    return out;
+  }
+
+  async function cloudWrite(key, str) {
+    const old = partsOf(key);
+    if (str.length <= CHUNK) {
+      await cs('setItem', key, str);
+      if (old.length) await cs('removeItems', old);
+      if (cloudKeys) { cloudKeys.add(key); old.forEach(k => cloudKeys.delete(k)); }
+      return;
+    }
+    const parts = split(str);
+    for (let i = 0; i < parts.length; i++) await cs('setItem', `${key}__${i + 1}`, parts[i]);
+    await cs('setItem', key, HEAD + parts.length);   // заголовок — последним, когда все части уже на месте
+    const extra = old.filter(k => +k.slice(key.length + 2) > parts.length);
+    if (extra.length) await cs('removeItems', extra);
+    if (cloudKeys) {
+      cloudKeys.add(key);
+      parts.forEach((_, i) => cloudKeys.add(`${key}__${i + 1}`));
+      extra.forEach(k => cloudKeys.delete(k));
+    }
+  }
+
+  async function cloudRemove(key) {
+    const all = [key, ...partsOf(key)];
+    await cs('removeItems', all);
+    if (cloudKeys) all.forEach(k => cloudKeys.delete(k));
+  }
+
+  /* --- отправка в облако: по одному ключу за раз, по очереди --- */
+  function schedule(key) {
+    if (!hasCloud) return;
+    clearTimeout(timers[key]);
+    timers[key] = setTimeout(() => push(key), 1000);
+  }
+  function push(key) {
+    clearTimeout(timers[key]); delete timers[key];
+    if (!hasCloud || !(key in dirty) || queued.has(key)) return;
+    queued.add(key);
+    chain = chain.then(async () => {
+      queued.delete(key);
+      if (!(key in dirty)) return;
+      const r = rev[key] || 0, v = data[key];
+      try {
+        if (v === undefined) await cloudRemove(key);
+        else await cloudWrite(key, JSON.stringify(v));
+        if ((rev[key] || 0) === r) { delete dirty[key]; saveDirty(); }
+        lastError = '';
+        checkLimit();
+      } catch (e) {
+        failed(e, 'save');
+        timers[key] = setTimeout(() => push(key), 15000);
+      }
+      emit('status');
+    });
+  }
+  function flushAll() { Object.keys(dirty).forEach(push); }
+
+  let limitWarned = false;
+  function checkLimit() {
+    if (!cloudKeys || limitWarned || cloudKeys.size < WARN_AT) return;
+    limitWarned = true;
+    toast(`Облако почти заполнено: ${cloudKeys.size} из ${LIMIT} ячеек. Сохраните резервную копию в настройках.`, 'err');
+  }
+
+  /* --- сверка с облаком --- */
+  async function getMany(keys) {
+    const out = {};
+    for (let i = 0; i < keys.length; i += BATCH) Object.assign(out, await cs('getItems', keys.slice(i, i + BATCH)));
+    return out;
+  }
+  function sync() {
+    if (!hasCloud) return Promise.resolve();
+    if (syncing) return syncing;
+    syncing = (async () => {
+      try {
+        const all = await cs('getKeys');
+        cloudKeys = new Set(all);
+        const mains = all.filter(k => !isPart(k));
+        const raw = await getMany(mains);
+        const need = [];
+        for (const k of mains) {
+          const v = raw[k];
+          if (typeof v === 'string' && v.startsWith(HEAD)) {
+            const n = +v.slice(HEAD.length);
+            for (let i = 1; i <= n; i++) need.push(`${k}__${i}`);
+          }
+        }
+        const parts = need.length ? await getMany(need) : {};
+
+        // убираем «осиротевшие» части от старых длинных записей
+        const wanted = new Set(need);
+        const orphans = all.filter(k => isPart(k) && !wanted.has(k));
+        if (orphans.length) {
+          try { await cs('removeItems', orphans); orphans.forEach(k => cloudKeys.delete(k)); } catch (e) {}
+        }
+
+        const cloud = {};
+        for (const k of mains) {
+          let v = raw[k];
+          if (!v) continue;
+          if (v.startsWith(HEAD)) {
+            const n = +v.slice(HEAD.length);
+            let s = '';
+            for (let i = 1; i <= n; i++) {
+              const p = parts[`${k}__${i}`];
+              if (p == null) { s = null; break; }
+              s += p;
+            }
+            if (s == null) continue;
+            v = s;
+          }
+          try { cloud[k] = JSON.parse(v); } catch (e) {}
+        }
+
+        let changed = false;
+        for (const k of Object.keys(cloud)) {
+          const c = cloud[k];
+          if (k in dirty && dirty[k] >= (c._t || 0)) continue;   // наша правка новее — отправим её
+          if (JSON.stringify(data[k]) !== JSON.stringify(c)) {
+            data[k] = c; lsWrite(P + k, JSON.stringify(c)); changed = true;
+          }
+          if (k in dirty) { delete dirty[k]; rev[k] = (rev[k] || 0) + 1; }
+        }
+        const inCloud = new Set(mains);
+        for (const k of Object.keys(data)) {
+          if (inCloud.has(k) || k in dirty) continue;
+          delete data[k]; lsRemove(P + k); changed = true;       // удалено на другом устройстве
+        }
+
+        saveDirty();
+        lastSync = Date.now(); lsWrite(SYNCED, String(lastSync));
+        lastError = '';
+        flushAll();
+        checkLimit();
+        if (changed) emit('change');
+      } catch (e) {
+        failed(e, 'sync');
+      } finally {
+        syncing = null;
+        emit('status');
+      }
+    })();
+    return syncing;
+  }
+
+  /* --- то, чем пользуется приложение --- */
+  function get(key, fallback) { const v = data[key]; return v === undefined ? fallback : v; }
+  function keys(prefix = '') { return Object.keys(data).filter(k => k.startsWith(prefix)); }
+  function set(key, value) {
+    if (value == null) {
+      delete data[key]; lsRemove(P + key);
+    } else {
+      value._t = Date.now();
+      data[key] = value;
+      if (!lsWrite(P + key, JSON.stringify(value))) toast('Память устройства переполнена. Сохраните резервную копию.', 'err');
+    }
+    rev[key] = (rev[key] || 0) + 1;
+    dirty[key] = Date.now(); saveDirty();
+    schedule(key);
+  }
+  function dump() { return JSON.parse(JSON.stringify(data)); }
+  function replaceAll(obj) {
+    for (const k of Object.keys(data)) if (!(k in obj)) set(k, null);
+    for (const k of Object.keys(obj)) set(k, obj[k]);
+  }
+  function info() {
+    return {
+      cloud: hasCloud, inTG, lastSync, lastError, syncing: !!syncing,
+      cells: cloudKeys ? cloudKeys.size : null, limit: LIMIT, warnAt: WARN_AT,
+      pending: Object.keys(dirty).length,
+    };
+  }
+
+  loadLocal();
+  return { get, set, keys, dump, replaceAll, sync, flushAll, info, on: fn => listeners.push(fn) };
+})();
+
+/* ================= Навигация ================= */
+const TABS = { calendar: 'Календарь', habits: 'Дела', ideas: 'Идеи' };
+const SCREENS = { settings: 'Настройки' };
+const nav = { tab: 'calendar', stack: [] };
+try { const t = localStorage.getItem('pl~tab'); if (TABS[t]) nav.tab = t; } catch (e) {}
+
+function render() {
+  const top = nav.stack[nav.stack.length - 1];
+  const screen = top || nav.tab;
+  $$('.screen').forEach(s => { s.hidden = s.id !== 'scr-' + screen; });
+  $('#title').textContent = top ? SCREENS[top] : TABS[nav.tab];
+  $$('.tab').forEach(b => {
+    const on = b.dataset.tab === nav.tab;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-selected', on);
+  });
+  const canBack = nav.stack.length > 0;
+  if (inTG && ver('6.1')) { canBack ? tg.BackButton.show() : tg.BackButton.hide(); }
+  else $('#btnBack').hidden = !canBack;
+  $('#btnSettings').hidden = top === 'settings';
+  if (screen === 'calendar') renderCalendar();
+  if (screen === 'settings') renderSettings();
+}
+function openScreen(name) { nav.stack.push(name); render(); window.scrollTo(0, 0); }
+function back() { if (!nav.stack.length) return; nav.stack.pop(); render(); }
+
+$$('.tab').forEach(b => b.addEventListener('click', () => {
+  if (nav.tab !== b.dataset.tab || nav.stack.length) haptic.tap();
+  nav.tab = b.dataset.tab; nav.stack = [];
+  try { localStorage.setItem('pl~tab', nav.tab); } catch (e) {}
+  render(); window.scrollTo(0, 0);
+}));
+$('#btnSettings').addEventListener('click', () => openScreen('settings'));
+$('#btnBack').addEventListener('click', back);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !e.target.closest('textarea, input')) back(); });
+
+/* ================= Календарь (заглушка до этапа 2) ================= */
+function renderCalendar() {
+  const s = new Intl.DateTimeFormat('ru-RU', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date());
+  $('#todayLine').textContent = 'Сегодня ' + s;
+}
+
+/* ================= Настройки ================= */
+function fmtTime(ms) {
+  const d = new Date(ms), now = new Date();
+  const hm = `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  return isoDate(d) === isoDate(now) ? `сегодня в ${hm}`
+    : new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long' }).format(d) + ' в ' + hm;
+}
+function renderStatus() {
+  const i = Store.info();
+  $('#stWhere').textContent = i.cloud ? 'облако Telegram + устройство'
+    : i.inTG ? 'только устройство (обновите Telegram)' : 'только это устройство (открыто не в Telegram)';
+  $('#stSync').textContent = !i.cloud ? '—'
+    : i.syncing ? 'сверяю…'
+    : i.lastError ? 'нет связи, попробую ещё раз'
+    : i.lastSync ? fmtTime(i.lastSync) : 'ещё не было';
+  $('#stCells').textContent = i.cells == null ? '—' : `${i.cells} из ${i.limit}`;
+  $('#stPendingRow').hidden = !i.cloud || !i.pending;
+  $('#stPending').textContent = i.pending;
+  const w = $('#stWarn');
+  w.hidden = !(i.cells != null && i.cells >= i.warnAt);
+  if (!w.hidden) w.textContent = 'Облако почти заполнено. Скачайте резервную копию — позже старые месяцы можно будет убрать из облака.';
+  $('#btnSync').hidden = !i.cloud;
+}
+function renderSettings() {
+  renderStatus();
+  const note = $('#checkNote');
+  if (document.activeElement !== note) note.value = (Store.get('check') || {}).text || '';
+}
+$('#checkNote').addEventListener('input', e => {
+  const text = e.target.value;
+  Store.set('check', text ? { text } : null);
+});
+$('#btnSync').addEventListener('click', () => { Store.sync(); renderStatus(); });
+
+/* --- резервная копия --- */
+function backupText() {
+  return JSON.stringify({ app: 'planner', format: 1, exported: new Date().toISOString(), data: Store.dump() }, null, 1);
+}
+async function exportFile() {
+  const name = `planner-${isoDate(new Date())}.json`;
+  const text = backupText();
+  const mobile = inTG && /ios|android/.test(tg.platform || '');
+  try {
+    const file = new File([text], name, { type: 'application/json' });
+    if (mobile && navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: name });
+      return;
+    }
+  } catch (e) {
+    if (e && e.name === 'AbortError') return;
+  }
+  try {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    toast(mobile ? 'Если файл не сохранился — нажмите «Скопировать как текст».' : `Файл ${name} сохранён в «Загрузки».`);
+  } catch (e) {
+    toast('Не получилось скачать файл. Нажмите «Скопировать как текст».', 'err');
+  }
+}
+async function copyBackup() {
+  const text = backupText();
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (e) {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    let ok = false;
+    try { ok = document.execCommand('copy'); } catch (e2) {}
+    ta.remove();
+    if (!ok) { toast('Не получилось скопировать.', 'err'); return; }
+  }
+  haptic.ok();
+  toast('Копия скопирована. Вставьте её в «Избранное» Telegram или в заметки.');
+}
+async function importBackup(text) {
+  let d, when;
+  try {
+    const o = JSON.parse(text);
+    if (!o || o.app !== 'planner' || !o.data || typeof o.data !== 'object') throw 0;
+    for (const [k, v] of Object.entries(o.data)) {
+      if (!/^[A-Za-z0-9_-]{1,100}$/.test(k) || !v || typeof v !== 'object') throw 0;
+    }
+    d = o.data; when = o.exported ? fmtTime(Date.parse(o.exported)) : '';
+  } catch (e) {
+    haptic.err();
+    toast('Это не резервная копия планировщика — файл не подошёл.', 'err');
+    return;
+  }
+  const ok = await ask(`Заменить все текущие данные копией${when ? ' от ' + when.replace('сегодня в', 'сегодня,') : ''}? Текущие данные пропадут.`);
+  if (!ok) return;
+  Store.replaceAll(d);
+  haptic.ok();
+  toast('Данные загружены из копии.');
+  render();
+}
+$('#btnExport').addEventListener('click', exportFile);
+$('#btnCopy').addEventListener('click', copyBackup);
+$('#btnImport').addEventListener('click', () => $('#fileImport').click());
+$('#fileImport').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0];
+  e.target.value = '';
+  if (!f) return;
+  try { importBackup(await f.text()); }
+  catch (err) { toast('Не получилось прочитать файл.', 'err'); }
+});
+$('#btnPaste').addEventListener('click', () => {
+  const t = $('#pasteImport').value.trim();
+  if (!t) { toast('Сначала вставьте текст копии.'); return; }
+  importBackup(t).then(() => { $('#pasteImport').value = ''; });
+});
+
+/* ================= Тема Telegram ================= */
+function applyTheme() {
+  const dark = tg && inTG ? tg.colorScheme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+  if (inTG && ver('6.1')) {
+    try { tg.setHeaderColor('secondary_bg_color'); tg.setBackgroundColor('secondary_bg_color'); } catch (e) {}
+  }
+  if (inTG && ver('7.10')) { try { tg.setBottomBarColor('bg_color'); } catch (e) {} }
+}
+
+/* ================= Запуск ================= */
+if (inTG) {
+  try { tg.ready(); tg.expand(); } catch (e) {}
+  if (ver('7.7')) { try { tg.disableVerticalSwipes(); } catch (e) {} }
+  if (ver('6.1')) tg.BackButton.onClick(back);
+  tg.onEvent('themeChanged', applyTheme);
+}
+applyTheme();
+render();                 // сразу показываем то, что лежит на устройстве
+
+Store.on(what => {
+  const top = nav.stack[nav.stack.length - 1];
+  if (top === 'settings') what === 'change' ? renderSettings() : renderStatus();
+  else if (what === 'change') render();
+});
+Store.sync();             // …а потом сверяем с облаком
+
+let lastVisibleSync = Date.now();
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') Store.flushAll();
+  else if (Date.now() - lastVisibleSync > 5000) { lastVisibleSync = Date.now(); Store.sync(); }
+});
+window.addEventListener('pagehide', () => Store.flushAll());
+window.addEventListener('online', () => Store.sync());
+})();
+</script>
+</body>
+</html>
