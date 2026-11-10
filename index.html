@@ -181,6 +181,38 @@ input[type=time]{
 mark{padding:0 1px; border-radius:3px; background:color-mix(in srgb, var(--btn) 30%, transparent); color:var(--text)}
 @media (prefers-reduced-motion: reduce){ .switch, .switch i{transition:none} }
 
+/* ===== Этап 4: привычки ===== */
+.mbar h2#wTitle{font-size:17px}
+.hab + .hab{margin-top:10px}
+.hab-h{display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:10px}
+.hab-h b{font-size:17px}
+.hweek{display:grid; grid-template-columns:repeat(7, 1fr); gap:4px}
+.hc{display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; border-radius:10px; background:var(--bg2); font-size:12px; color:var(--hint)}
+.hc i{font-style:normal; font-size:13px; font-weight:600; color:var(--text); min-height:18px; line-height:18px}
+.hc.on{background:var(--btn); color:var(--btn-text)}
+.hc.on i{color:var(--btn-text)}
+.hc.today{box-shadow:inset 0 0 0 2px var(--btn)}
+.hc.edit{box-shadow:inset 0 0 0 2px var(--danger)}
+.hc[disabled]{opacity:.35; cursor:default}
+.hedit{margin-top:10px}
+.hedit input, .hrow input{
+  width:100%; padding:10px 12px; border:0; border-radius:10px;
+  background:var(--bg2); color:var(--text); font:inherit; font-size:16px; -webkit-appearance:none; appearance:none;
+}
+.hprog{margin-top:12px; font-size:15px}
+.hprog + .hprog{margin-top:8px}
+.bar{height:8px; margin-top:6px; border-radius:999px; background:var(--bg2); overflow:hidden}
+.bar i{display:block; height:100%; border-radius:inherit; background:var(--btn); transition:width .3s}
+.bar.full i{background:#34c759}
+.streak{margin-top:8px; font-size:14px; color:var(--hint)}
+.hrow{display:flex; align-items:center; gap:10px; min-height:48px; border-bottom:1px solid var(--sep)}
+.hrow:last-child{border-bottom:0}
+.hrow .t{flex:1; display:flex; flex-direction:column; gap:1px}
+.hrow.done .chk{background:var(--btn); border-color:var(--btn); color:var(--btn-text)}
+.hrow.done .chk svg{opacity:1}
+.hrow .sum{flex:none; width:120px; display:flex; align-items:center; gap:6px}
+@media (prefers-reduced-motion: reduce){ .bar i{transition:none} }
+
 /* ===== Нижние вкладки ===== */
 .tabbar{
   position:fixed; left:0; right:0; bottom:0; z-index:10;
@@ -248,7 +280,7 @@ mark{padding:0 1px; border-radius:3px; background:color-mix(in srgb, var(--btn) 
       </div>
 
       <h2 class="sec-h">Привычки на сегодня</h2>
-      <div class="card"><p class="hint" style="margin:0">Появятся на этапе 4 — вместе с вкладкой «Дела».</p></div>
+      <div class="card" id="dHabits"></div>
 
       <h2 class="sec-h">Расписание</h2>
       <div class="card" id="dSlots"></div>
@@ -263,11 +295,13 @@ mark{padding:0 1px; border-radius:3px; background:color-mix(in srgb, var(--btn) 
 
     <!-- Вкладка 2. Дела (этап 4) -->
     <section class="screen" id="scr-habits" hidden>
-      <div class="card empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16.5 9.5"/></svg>
-        <h2>Трекер привычек</h2>
-        <p>Появится на этапе 4</p>
+      <div class="mbar">
+        <button class="icon-btn" id="wPrev" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 id="wTitle">неделя</h2>
+        <button class="icon-btn" id="wNext" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="chip" id="wNow">Сейчас</button>
       </div>
+      <div id="hList"></div>
     </section>
 
     <!-- Вкладка 3. Идеи (этап 6) -->
@@ -352,7 +386,7 @@ mark{padding:0 1px; border-radius:3px; background:color-mix(in srgb, var(--btn) 
       </div>
 
       <p class="hint center">Шкала времени, помодоро и цели привычек появятся здесь на следующих этапах.</p>
-      <p class="hint center">Версия: этап 3 · повторы и поиск</p>
+      <p class="hint center">Версия: этап 4 · привычки</p>
     </section>
   </main>
 </div>
@@ -701,6 +735,7 @@ function render() {
   if (screen === 'calendar') renderCalendar();
   if (screen === 'day') renderDay();
   if (screen === 'search') renderSearch();
+  if (screen === 'habits') renderHabits();
   if (screen === 'settings') renderSettings();
 }
 function openScreen(name) { nav.stack.push(name); render(); window.scrollTo(0, 0); }
@@ -874,6 +909,7 @@ function renderDay() {
     `<button class="${d.mood === i + 1 ? 'on' : ''}" data-mood="${i + 1}" aria-label="Настроение ${i + 1} из 5" aria-pressed="${d.mood === i + 1}">${e}</button>`).join('');
   const diary = $('#dDiary');
   if (document.activeElement !== diary) diary.value = d.diary;
+  renderDayHabits();
 }
 
 /* поле правки прямо на месте: Enter или уход из поля — сохранить, Esc — отменить */
@@ -1038,6 +1074,196 @@ $('#tSave').addEventListener('click', () => {
 });
 $('#tMove').addEventListener('click', () => { const { iso, id } = ed; back(); moveToTomorrow(iso, id); });
 $('#tDel').addEventListener('click', async () => { if (await deleteTask(ed.iso, ed.id, ed.rid)) back(); });
+
+/* ================= Привычки =================
+   habits = { items:[{id,name,type:'check'|'sum',per:'day'|'week'|'month',goal,hidden?}] } — пока не сохранено, берём четыре стандартные.
+   hm_YYYY-MM = { marks:{ idПривычки:{ "03":1 | сумма } } } — отметки за месяц. */
+const DEFAULT_HABITS = [
+  { id: 'train', name: 'Тренировка', type: 'check', per: 'week', goal: 3 },
+  { id: 'read', name: 'Чтение 20 страниц', type: 'check', per: 'day', goal: 1 },
+  { id: 'video', name: 'Видео по развитию', type: 'check', per: 'day', goal: 1 },
+  { id: 'invest', name: 'Инвестиции', type: 'sum', per: 'month', goal: 3000 },
+];
+const MONTHS_GEN = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+const MONTHS_PREP = ['январе', 'феврале', 'марте', 'апреле', 'мае', 'июне', 'июле', 'августе', 'сентябре', 'октябре', 'ноябре', 'декабре'];
+const plural = (n, f) => f[(n % 10 === 1 && n % 100 !== 11) ? 0 : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? 1 : 2];
+const rub = n => Math.round(n).toLocaleString('ru-RU') + ' ₽';
+
+function getHabits() {
+  const h = Store.get('habits');
+  return h && h.items ? JSON.parse(JSON.stringify(h.items)) : DEFAULT_HABITS.map(x => ({ ...x }));
+}
+const visibleHabits = () => getHabits().filter(h => !h.hidden);
+const hmKey = iso => 'hm_' + iso.slice(0, 7);
+function markOf(id, iso) {
+  const m = Store.get(hmKey(iso));
+  return (m && m.marks && m.marks[id] && +m.marks[id][iso.slice(8)]) || 0;
+}
+function setMark(id, iso, v) {
+  const k = hmKey(iso), m = JSON.parse(JSON.stringify(Store.get(k) || {}));
+  delete m._t;
+  m.marks = m.marks || {};
+  const h = m.marks[id] = m.marks[id] || {};
+  if (v) h[iso.slice(8)] = v; else delete h[iso.slice(8)];
+  if (!Object.keys(h).length) delete m.marks[id];
+  Store.set(k, Object.keys(m.marks).length ? m : null);
+}
+const weekStart = iso => addDays(iso, -wdIdx(iso));
+const weekDays = mon => [0, 1, 2, 3, 4, 5, 6].map(i => addDays(mon, i));
+const sumDays = (id, isos) => isos.reduce((s, i) => s + markOf(id, i), 0);
+function monthTotal(id, ym) {
+  const m = Store.get('hm_' + ym);
+  return Object.values((m && m.marks && m.marks[id]) || {}).reduce((s, v) => s + +v, 0);
+}
+function periodTotal(h, iso) {               // сколько набрано в периоде цели, куда входит этот день
+  return h.per === 'day' ? markOf(h.id, iso) : h.per === 'week' ? sumDays(h.id, weekDays(weekStart(iso))) : monthTotal(h.id, iso.slice(0, 7));
+}
+function streak(h) {                          // сколько периодов подряд цель выполнена (текущий — если уже выполнен)
+  const today = isoDate(new Date());
+  let n = 0;
+  if (h.per === 'day') {
+    let d = markOf(h.id, today) >= h.goal ? today : addDays(today, -1);
+    while (n < 2000 && markOf(h.id, d) >= h.goal) { n++; d = addDays(d, -1); }
+    return [n, plural(n, ['день', 'дня', 'дней'])];
+  }
+  if (h.per === 'week') {
+    const met = mon => sumDays(h.id, weekDays(mon)) >= h.goal;
+    let mon = weekStart(today);
+    if (!met(mon)) mon = addDays(mon, -7);
+    while (n < 300 && met(mon)) { n++; mon = addDays(mon, -7); }
+    return [n, plural(n, ['неделя', 'недели', 'недель'])];
+  }
+  const ym = d => isoDate(d).slice(0, 7);
+  let dt = new Date(); dt.setDate(1);
+  if (monthTotal(h.id, ym(dt)) < h.goal) dt.setMonth(dt.getMonth() - 1);
+  while (n < 120 && monthTotal(h.id, ym(dt)) >= h.goal) { n++; dt.setMonth(dt.getMonth() - 1); }
+  return [n, plural(n, ['месяц', 'месяца', 'месяцев'])];
+}
+function goalText(h) {
+  if (h.per === 'day') return 'каждый день';
+  const per = h.per === 'week' ? 'в неделю' : 'в месяц';
+  return h.type === 'sum' ? `минимум ${rub(h.goal)} ${per}` : `минимум ${h.goal} ${plural(h.goal, ['раз', 'раза', 'раз'])} ${per}`;
+}
+/* отметить привычку; если цель периода только что выполнена — радуемся */
+function markHabit(h, iso, v) {
+  const before = periodTotal(h, iso);
+  setMark(h.id, iso, v);
+  const after = periodTotal(h, iso);
+  if (before < h.goal && after >= h.goal) {
+    haptic.ok();
+    if (h.per !== 'day') toast(`🎉 Цель выполнена: ${h.name}`);
+  } else haptic.tap();
+}
+
+const hab = { mon: weekStart(isoDate(new Date())), edit: null };
+function weekTitle(mon) {
+  const a = parseIso(mon), b = parseIso(addDays(mon, 6));
+  return a.getMonth() === b.getMonth()
+    ? `${a.getDate()} – ${b.getDate()} ${MONTHS_GEN[b.getMonth()]}`
+    : `${a.getDate()} ${MONTHS_GEN[a.getMonth()]} – ${b.getDate()} ${MONTHS_GEN[b.getMonth()]}`;
+}
+const bar = (v, goal) => `<div class="bar${v >= goal ? ' full' : ''}"><i style="width:${Math.min(100, goal ? v / goal * 100 : 0)}%"></i></div>`;
+
+function renderHabits() {
+  const days = weekDays(hab.mon), today = isoDate(new Date());
+  const ymWeek = addDays(hab.mon, 3).slice(0, 7);          // месяц недели — по четвергу
+  const mIdx = +ymWeek.slice(5) - 1;
+  $('#wTitle').textContent = weekTitle(hab.mon);
+  const list = visibleHabits();
+  $('#hList').innerHTML = list.length ? list.map(h => {
+    const cells = days.map((iso, i) => {
+      const v = markOf(h.id, iso), future = iso > today;
+      const editing = hab.edit && hab.edit.id === h.id && hab.edit.iso === iso;
+      const label = h.type === 'sum' ? (v ? (v >= 10000 ? Math.round(v / 1000) + 'к' : v) : '') : (v ? '✓' : '');
+      return `<button class="hc${v ? ' on' : ''}${iso === today ? ' today' : ''}${editing ? ' edit' : ''}" data-iso="${iso}"${future ? ' disabled' : ''} aria-label="${WEEK[i]} ${parseIso(iso).getDate()}${h.type === 'sum' ? ', ' + rub(v) : v ? ', отмечено' : ''}">`
+        + `${WEEK[i]}<i>${label}</i></button>`;
+    }).join('');
+    const weekSum = sumDays(h.id, days);
+    let prog;
+    if (h.per === 'day') {
+      const doneDays = days.filter(i => markOf(h.id, i) >= h.goal).length;
+      prog = `<div class="hprog">${doneDays} из 7 дней на этой неделе${bar(doneDays, 7)}</div>`;
+    } else if (h.per === 'week') {
+      prog = `<div class="hprog">${h.type === 'sum' ? `${rub(weekSum)} из ${rub(h.goal)}` : `${weekSum} из ${h.goal}`} за неделю${bar(weekSum, h.goal)}</div>`;
+    } else {
+      const mSum = monthTotal(h.id, ymWeek);
+      prog = `<div class="hprog">За неделю: <b>${h.type === 'sum' ? rub(weekSum) : weekSum}</b></div>`
+        + `<div class="hprog">В ${MONTHS_PREP[mIdx]}: ${h.type === 'sum' ? `${rub(mSum)} из ${rub(h.goal)}` : `${mSum} из ${h.goal}`}${bar(mSum, h.goal)}</div>`;
+    }
+    const [n, unit] = streak(h);
+    const ed = hab.edit && hab.edit.id === h.id
+      ? `<form class="add hedit" data-hid="${h.id}"><input type="number" inputmode="numeric" min="0" step="1" placeholder="Сумма за ${dayTitle(hab.edit.iso).toLowerCase()}, ₽" value="${markOf(h.id, hab.edit.iso) || ''}"><button type="submit" aria-label="Сохранить сумму">✓</button></form>` : '';
+    return `<div class="card hab" data-hid="${h.id}">`
+      + `<div class="hab-h"><b>${esc(h.name)}</b><span class="meta">${goalText(h)}</span></div>`
+      + `<div class="hweek">${cells}</div>${ed}${prog}`
+      + `<div class="streak">${n ? `🔥 Серия: ${n} ${unit} подряд` : 'Серия ещё не началась'}</div></div>`;
+  }).join('') : '<div class="card empty"><p>Все привычки скрыты</p></div>';
+  const inp = $('.hedit input');
+  if (inp) inp.focus();
+}
+function shiftWeek(n) { hab.mon = addDays(hab.mon, 7 * n); hab.edit = null; haptic.tap(); renderHabits(); }
+$('#wPrev').addEventListener('click', () => shiftWeek(-1));
+$('#wNext').addEventListener('click', () => shiftWeek(1));
+$('#wNow').addEventListener('click', () => { hab.mon = weekStart(isoDate(new Date())); hab.edit = null; renderHabits(); });
+$('#hList').addEventListener('click', e => {
+  const c = e.target.closest('.hc');
+  if (!c || c.disabled) return;
+  const h = getHabits().find(x => x.id === c.closest('.hab').dataset.hid);
+  if (!h) return;
+  const iso = c.dataset.iso;
+  if (h.type === 'sum') {                              // сумма — вводим в поле под неделей
+    hab.edit = hab.edit && hab.edit.id === h.id && hab.edit.iso === iso ? null : { id: h.id, iso };
+  } else markHabit(h, iso, markOf(h.id, iso) ? 0 : 1);
+  renderHabits();
+});
+$('#hList').addEventListener('submit', e => {
+  e.preventDefault();
+  const f = e.target.closest('.hedit');
+  const h = getHabits().find(x => x.id === f.dataset.hid);
+  if (!h || !hab.edit) return;
+  const v = Math.max(0, Math.round(+f.querySelector('input').value || 0));
+  markHabit(h, hab.edit.iso, v);
+  hab.edit = null;
+  renderHabits();
+});
+
+/* «Привычки на сегодня» на странице дня — те же отметки */
+function renderDayHabits() {
+  const iso = nav.day, list = visibleHabits(), box = $('#dHabits');
+  if (!list.length) { box.innerHTML = '<p class="empty-line">Привычки скрыты — их можно вернуть во вкладке «Дела».</p>'; return; }
+  if (box.contains(document.activeElement)) return;     // не мешаем вводить сумму
+  const m = parseIso(iso).getMonth();
+  box.innerHTML = list.map(h => {
+    const v = markOf(h.id, iso), total = periodTotal(h, iso);
+    const meta = h.per === 'day' ? (() => { const [n, u] = streak(h); return n ? `🔥 ${n} ${u} подряд` : 'каждый день'; })()
+      : h.per === 'week' ? `${h.type === 'sum' ? rub(total) : total} из ${h.type === 'sum' ? rub(h.goal) : h.goal} на этой неделе`
+      : `в ${MONTHS_PREP[m]}: ${h.type === 'sum' ? `${rub(total)} из ${rub(h.goal)}` : `${total} из ${h.goal}`}`;
+    const future = iso > isoDate(new Date());
+    return `<div class="hrow${v && h.type !== 'sum' ? ' done' : ''}" data-hid="${h.id}">`
+      + (h.type === 'sum' ? '' : `<button class="chk" role="checkbox" aria-checked="${!!v}" aria-label="${esc(h.name)}"${future ? ' disabled' : ''}>${ICON_CHECK}</button>`)
+      + `<div class="t"><span>${esc(h.name)}</span><span class="meta">${meta}</span></div>`
+      + (h.type === 'sum' ? `<label class="sum"><input type="number" inputmode="numeric" min="0" step="1" placeholder="0" value="${v || ''}" aria-label="${esc(h.name)}, сумма за день"${future ? ' disabled' : ''}>₽</label>` : '')
+      + '</div>';
+  }).join('');
+}
+$('#dHabits').addEventListener('click', e => {
+  const b = e.target.closest('.chk');
+  if (!b || b.disabled) return;
+  const h = getHabits().find(x => x.id === b.closest('.hrow').dataset.hid);
+  if (!h) return;
+  markHabit(h, nav.day, markOf(h.id, nav.day) ? 0 : 1);
+  renderDayHabits();
+});
+$('#dHabits').addEventListener('change', e => {         // сумма сохраняется, когда ушли из поля
+  const inp = e.target.closest('input');
+  if (!inp) return;
+  const h = getHabits().find(x => x.id === inp.closest('.hrow').dataset.hid);
+  if (!h) return;
+  markHabit(h, nav.day, Math.max(0, Math.round(+inp.value || 0)));
+  inp.blur();
+  renderDayHabits();
+});
+$('#dHabits').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('input')) e.target.blur(); });
 
 /* ================= Поиск по дневнику ================= */
 function renderSearch() {
@@ -1231,7 +1457,7 @@ Store.on(what => {
   else if (what === 'change') {
     if (top === 'task') return;                 // окно задачи не трогаем, пока оно открыто
     // не перерисовываем страницу дня, пока в ней что-то печатают
-    if (top === 'day' && document.activeElement && document.activeElement.closest('#scr-day input, #scr-day textarea')) return;
+    if (document.activeElement && document.activeElement.closest('#scr-day input, #scr-day textarea, #scr-habits input')) return;
     render();
   }
 });
