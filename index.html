@@ -266,6 +266,14 @@ input[type=date]{
 .d.r1{background:var(--w1)} .d.r2{background:var(--w2)} .d.r3{background:var(--w3)} .d.r4{background:var(--w4)} .d.r5{background:var(--w5)}
 .d.r6{background:var(--w1)}
 .d.out{background:transparent}
+/* выходной на работе: мятный день с пальмой (не путать с красным дедлайном) */
+.d.dayoff{background:#d6f2e2; box-shadow:inset 0 0 0 2px #9fdcbc}
+.d.dayoff.out{background:transparent; box-shadow:none}
+#dOff[aria-pressed=true]{background:#d6f2e2; color:#2d8f5c}
+.legend{display:flex; flex-wrap:wrap; gap:6px 16px; justify-content:center; margin:10px 0 0; font-size:13px; color:var(--hint)}
+.legend span{display:inline-flex; align-items:center; gap:5px}
+.off-sq{width:12px; height:12px; border-radius:3px; background:#d6f2e2; box-shadow:inset 0 0 0 1.5px #9fdcbc}
+.dnav{gap:6px}
 .grid{gap:3px}
 .d .n{font-weight:500}
 
@@ -386,12 +394,14 @@ select{
         <button class="chip" id="mToday">Сегодня</button>
       </div>
       <div class="grid" id="mGrid"></div>
+      <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span></p>
     </section>
 
     <!-- Страница дня -->
     <section class="screen" id="scr-day" hidden>
       <div class="dnav">
         <button class="chip" id="dPrev">‹ Вчера</button>
+        <button class="chip" id="dOff" aria-pressed="false">🌴 Выходной</button>
         <button class="chip" id="dNext">Завтра ›</button>
       </div>
 
@@ -1075,7 +1085,8 @@ function getDay(iso) {
 }
 function saveDay(iso, d) {
   delete d._t;
-  const empty = !d.tasks.length && !Object.keys(d.rdone).length && !Object.keys(d.plan).length && !d.diary.trim() && !d.mood;
+  if (!d.off) delete d.off;
+  const empty = !d.tasks.length && !Object.keys(d.rdone).length && !Object.keys(d.plan).length && !d.diary.trim() && !d.mood && !d.off;
   Store.set(dayKey(iso), empty ? null : d);   // пустой день не занимает ячейку облака
 }
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -1130,10 +1141,11 @@ function renderCalendar() {
     const busy = d && ((d.tasks && d.tasks.length) || (d.plan && Object.keys(d.plan).length));
     const dl = d && d.tasks && d.tasks.some(t => t.deadline && !t.done);
     const mood = d && d.mood ? MOODS[d.mood - 1] : '';
-    const cls = ['d', dt.getMonth() !== m && 'out', iso === today && 'today', i % 7 > 4 && 'we', 'r' + (Math.floor(i / 7) + 1)].filter(Boolean).join(' ');
-    html += `<button class="${cls}" data-iso="${iso}" aria-label="${dt.getDate()} ${MONTHS[dt.getMonth()].toLowerCase()}">`
+    const off = d && d.off;
+    const cls = ['d', dt.getMonth() !== m && 'out', iso === today && 'today', i % 7 > 4 && 'we', 'r' + (Math.floor(i / 7) + 1), off && 'dayoff'].filter(Boolean).join(' ');
+    html += `<button class="${cls}" data-iso="${iso}" aria-label="${dt.getDate()} ${MONTHS_GEN[dt.getMonth()]}${off ? ', выходной' : ''}${dl ? ', дедлайн' : ''}">`
       + `<span class="n">${dt.getDate()}</span>`
-      + `<span class="marks">${busy ? '<i class="dot"></i>' : ''}${dl ? '<i class="dot red"></i>' : ''}${mood}</span></button>`;
+      + `<span class="marks">${off ? '🌴' : ''}${busy ? '<i class="dot"></i>' : ''}${dl ? '<i class="dot red"></i>' : ''}${mood}</span></button>`;
   }
   $('#mGrid').innerHTML = html;
 }
@@ -1167,6 +1179,14 @@ function shiftDay(n) {
   haptic.tap(); openDay(isoDate(dt));
 }
 $('#dPrev').addEventListener('click', () => shiftDay(-1));
+$('#dOff').addEventListener('click', () => {                 // выходной на работе
+  const d = getDay(nav.day);
+  d.off = !d.off;
+  saveDay(nav.day, d);
+  haptic.tap();
+  toast(d.off ? '🌴 День отмечен как выходной' : 'Отметка «выходной» снята');
+  render();
+});
 $('#dNext').addEventListener('click', () => shiftDay(1));
 
 function slotTimes() {
@@ -1183,6 +1203,8 @@ const taskAttr = t => t.rec ? `data-rid="${t.id}"` : `data-id="${t.id}"`;
 
 function renderDay() {
   const iso = nav.day, d = getDay(iso), list = dayTasks(iso, d);
+  $('#dOff').setAttribute('aria-pressed', !!d.off);
+  $('#title').textContent = dayTitle(iso) + (d.off ? ' 🌴' : '');
 
   $('#dTasks').innerHTML = list.length
     ? list.map(t => {
