@@ -122,7 +122,7 @@ details textarea{margin:8px 0}
 .del{flex:none; width:36px; height:36px; color:var(--hint); font-size:22px; line-height:1}
 .add{display:flex; gap:8px; margin-top:10px}
 .add button{flex:none; width:46px; border-radius:10px; background:var(--btn); color:var(--btn-text); font-size:24px}
-input[type=text], input[type=search]{
+input[type=text], input[type=search], input[type=url]{
   -webkit-appearance:none; appearance:none;
   width:100%; padding:10px 12px; border:0; border-radius:10px;
   background:var(--bg2); color:var(--text); font:inherit; font-size:16px;
@@ -237,6 +237,36 @@ input.num{width:120px; padding:9px 12px; border:0; border-radius:10px; backgroun
 .sum-big div{flex:1; padding:12px; border-radius:var(--r); background:var(--card); text-align:center}
 .sum-big b{display:block; font-size:22px; font-variant-numeric:tabular-nums}
 .sum-big span{font-size:13px; color:var(--hint)}
+
+/* ===== Этап 6: идеи ===== */
+.chips{display:flex; gap:6px; margin:0 -16px 12px; padding:0 16px 4px; overflow-x:auto; scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chips .chip{flex:none}
+.chip.on{background:var(--btn); color:var(--btn-text)}
+.irow{display:flex; gap:8px}
+.irow > *{flex:1; margin:0 !important; padding-left:8px; padding-right:8px}
+.idea{display:block; width:100%; margin-top:8px; padding:12px 14px; border-radius:var(--r); background:var(--card); text-align:left}
+.idea b{display:block; margin:6px 0 2px; font-size:16px; word-break:break-word}
+.idea-top{display:flex; justify-content:space-between; align-items:center; gap:8px}
+.badge{padding:2px 8px; border-radius:999px; background:var(--bg2); color:var(--hint); font-size:12px; font-weight:600}
+.badge.plan{background:color-mix(in srgb, var(--btn) 16%, transparent); color:var(--btn)}
+.badge.done{background:color-mix(in srgb, #34c759 18%, transparent); color:#1f9d4a}
+.pick{margin-top:10px; box-shadow:inset 0 0 0 2px var(--btn)}
+.pick b{display:block; margin:4px 0 12px; font-size:17px; word-break:break-word}
+.pick-btns{display:flex; gap:6px}
+.pick-btns .chip{background:var(--bg2)}
+#scr-idea .card > textarea, #scr-idea .card > input{margin-top:10px}
+#scr-idea .card > textarea:first-child{margin-top:0}
+.icat{margin-top:10px}
+.icat button{font-size:14px; padding:10px 4px}
+#iStepsAdd{margin-top:10px}
+.linkbtn{margin-top:8px; color:var(--link); font-size:15px}
+input[type=date]{
+  flex:none; padding:8px 10px; border:0; border-radius:10px;
+  background:var(--bg2); color:var(--text); font:inherit; font-size:16px;
+}
+.plan-row span{min-width:0; word-break:break-word}
+.plan-row:first-child{margin-top:0; padding-top:0; border-top:0}
 
 /* ===== Нижние вкладки ===== */
 .tabbar{
@@ -386,11 +416,57 @@ input.num{width:120px; padding:9px 12px; border:0; border-radius:10px; backgroun
 
     <!-- Вкладка 3. Идеи (этап 6) -->
     <section class="screen" id="scr-ideas" hidden>
-      <div class="card empty">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21.5h4M12 2.5a6.5 6.5 0 0 0-3.8 11.8c.5.4.8 1 .8 1.6V16h6v-.1c0-.6.3-1.2.8-1.6A6.5 6.5 0 0 0 12 2.5z"/></svg>
-        <h2>Идеи</h2>
-        <p>Появятся на этапе 6</p>
+      <div class="chips" id="iCats" role="tablist" aria-label="Разделы идей"></div>
+      <div class="irow">
+        <button class="btn" id="iAdd">+ Идея</button>
+        <button class="btn-line" id="iPick">🎲 Мне нечем заняться</button>
       </div>
+      <div id="iPickBox"></div>
+      <div id="iList"></div>
+      <button class="btn-line" id="iArch" style="margin-top:16px">Архив</button>
+    </section>
+
+    <!-- Идея -->
+    <section class="screen" id="scr-idea" hidden>
+      <div class="card">
+        <textarea id="iText" rows="2" placeholder="Идея, например «Курс по Python»" spellcheck="false" autocorrect="off"></textarea>
+        <div class="seg seg3 icat" id="iCat"></div>
+        <input type="url" id="iLink" placeholder="Ссылка (по желанию)" spellcheck="false" autocorrect="off" autocapitalize="off">
+        <button class="linkbtn" id="iOpen" hidden>Открыть ссылку ↗</button>
+        <textarea id="iNote" rows="2" placeholder="Комментарий (по желанию)" spellcheck="false" autocorrect="off"></textarea>
+      </div>
+
+      <h2 class="sec-h">Статус</h2>
+      <div class="card">
+        <div class="seg seg3" id="iStatus">
+          <button data-st="new">Новая</button>
+          <button data-st="plan">В плане</button>
+          <button data-st="done">Выполнена</button>
+        </div>
+      </div>
+
+      <h2 class="sec-h">Шаги <span id="iProg"></span></h2>
+      <div class="card">
+        <div id="iSteps"></div>
+        <textarea id="iStepsAdd" rows="3" placeholder="Шаги — каждый с новой строки. Можно вставить план из чата целиком." spellcheck="false" autocorrect="off"></textarea>
+        <div class="frow">
+          <span>Время на шаг, мин</span>
+          <input type="number" id="iMin" class="num" inputmode="numeric" min="5" step="5" value="30" aria-label="Время на шаг, минут">
+        </div>
+        <button class="btn-line" id="iStepsBtn">Добавить шаги</button>
+      </div>
+
+      <button class="btn" id="iPlan" style="margin-top:16px">Запланировать</button>
+      <button class="btn-line danger" id="iDel">Удалить идею</button>
+      <p class="hint center">Сохраняется само.</p>
+    </section>
+
+    <!-- План идеи перед сохранением -->
+    <section class="screen" id="scr-plan" hidden>
+      <p class="hint" id="pInfo" style="margin:0 4px 10px"></p>
+      <div class="card" id="pRows"></div>
+      <button class="btn" id="pSave" style="margin-top:16px">Сохранить в календарь</button>
+      <button class="btn-line" id="pCancel">Отмена</button>
     </section>
 
     <!-- Задача: время, дедлайн, повтор -->
@@ -466,7 +542,7 @@ input.num{width:120px; padding:9px 12px; border:0; border-radius:10px; backgroun
       </div>
 
       <p class="hint center">Шкала времени, помодоро и цели привычек появятся здесь на следующих этапах.</p>
-      <p class="hint center">Версия: этап 5 · статистика</p>
+      <p class="hint center">Версия: этап 6 · идеи</p>
     </section>
   </main>
 </div>
@@ -793,7 +869,7 @@ const Store = (() => {
 
 /* ================= Навигация ================= */
 const TABS = { calendar: 'Календарь', habits: 'Дела', ideas: 'Идеи' };
-const SCREENS = { settings: 'Настройки', day: 'День', task: 'Задача', search: 'Поиск по дневнику', habit: 'Привычка', stats: 'Статистика', summary: 'Итоги недели' };
+const SCREENS = { settings: 'Настройки', day: 'День', task: 'Задача', search: 'Поиск по дневнику', habit: 'Привычка', stats: 'Статистика', summary: 'Итоги недели', idea: 'Идея', plan: 'План по дням' };
 const nav = { tab: 'calendar', stack: [], day: isoDate(new Date()) };
 try { const t = localStorage.getItem('pl~tab'); if (TABS[t]) nav.tab = t; } catch (e) {}
 
@@ -818,6 +894,9 @@ function render() {
   if (screen === 'habits') renderHabits();
   if (screen === 'stats') renderStats();
   if (screen === 'summary') renderSummary();
+  if (screen === 'ideas') renderIdeas();
+  if (screen === 'idea') renderIdeaBits();
+  if (screen === 'plan') renderPlan();
   if (screen === 'settings') renderSettings();
 }
 function openScreen(name) { nav.stack.push(name); render(); window.scrollTo(0, 0); }
@@ -960,7 +1039,7 @@ function renderDay() {
 
   $('#dTasks').innerHTML = list.length
     ? list.map(t => {
-        const meta = [t.time, t.rec && '↻ ' + repLabel(t.days), t.deadline && 'дедлайн'].filter(Boolean).join(' · ');
+        const meta = [t.time, t.rec && '↻ ' + repLabel(t.days), t.idea && '💡 шаг идеи', t.dur && `~${t.dur} мин`, t.deadline && 'дедлайн'].filter(Boolean).join(' · ');
         return `<div class="task${t.done ? ' done' : ''}${t.deadline ? ' dl' : ''}" ${taskAttr(t)}>`
           + `<button class="chk" role="checkbox" aria-checked="${!!t.done}" aria-label="Выполнено">${ICON_CHECK}</button>`
           + `<div class="t"><span class="tx">${esc(t.text)}</span>${meta ? `<span class="meta">${esc(meta)}</span>` : ''}</div>`
@@ -995,7 +1074,7 @@ function renderDay() {
 }
 
 /* поле правки прямо на месте: Enter или уход из поля — сохранить, Esc — отменить */
-function inlineEdit(el, value, placeholder, onSave) {
+function inlineEdit(el, value, placeholder, onSave, after = renderDay) {
   const inp = document.createElement('input');
   inp.type = 'text'; inp.value = value; inp.placeholder = placeholder;
   inp.spellcheck = false; inp.setAttribute('autocorrect', 'off'); inp.enterKeyHint = 'done';
@@ -1006,7 +1085,7 @@ function inlineEdit(el, value, placeholder, onSave) {
     if (done) return;
     done = true;
     if (save) onSave(inp.value.trim());
-    renderDay();
+    after();
   };
   inp.addEventListener('keydown', e => {
     if (e.key === 'Enter') { e.preventDefault(); finish(true); }
@@ -1023,6 +1102,7 @@ function moveToTomorrow(iso, id) {
   const next = addDays(iso, 1), d2 = getDay(next);
   d2.tasks.push({ ...t, done: false });
   saveDay(next, d2);
+  if (t.idea) updateIdea(t.idea, i => { const s = i.steps.find(x => x.id === t.step); if (s) s.day = next; });
   haptic.tap();
   toast('Перенесено на ' + dayTitle(next).toLowerCase());
   render();
@@ -1033,9 +1113,10 @@ async function deleteTask(iso, id, rid) {
     endRule(rid, iso);
     toast('Повтор убран');
   } else {
-    const d = getDay(iso);
+    const d = getDay(iso), t = d.tasks.find(x => x.id === id);
     d.tasks = d.tasks.filter(x => x.id !== id);
     saveDay(iso, d);
+    if (t && t.idea) updateIdea(t.idea, i => { const s = i.steps.find(x => x.id === t.step); if (s) delete s.day; });
     toast('Задача удалена');
   }
   render();
@@ -1050,9 +1131,10 @@ $('#dTasks').addEventListener('click', e => {
     const d = getDay(iso);
     let on;
     if (rid) { on = !d.rdone[rid]; if (on) d.rdone[rid] = 1; else delete d.rdone[rid]; }
-    else { const t = d.tasks.find(x => x.id === id); if (!t) return; t.done = on = !t.done; }
+    else { const t = d.tasks.find(x => x.id === id); if (!t) return; t.done = on = !t.done; if (t.idea) var link = t; }
     on ? haptic.ok() : haptic.tap();
     saveDay(iso, d); renderDay();
+    if (link) setStepDone(link.idea, link.step, on, true);    // шаг идеи отмечается и в самой идее
   } else if (e.target.closest('.mv')) moveToTomorrow(iso, id);
   else if (e.target.closest('.del')) deleteTask(iso, id, rid);
   else if (e.target.closest('.t')) openTask(iso, id, rid);
@@ -1515,6 +1597,276 @@ $('#dHabits').addEventListener('change', e => {         // сумма сохра
 });
 $('#dHabits').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches('input')) e.target.blur(); });
 
+/* ================= Идеи =================
+   ideas = { items:[{id,text,cat,link?,note?,status:'new'|'plan'|'done',month?,created,
+                     steps:[{id,text,min,done?,day?}]}] }
+   Запланированный шаг — обычная задача дня с полями idea, step, dur; отметка синхронизируется в обе стороны. */
+const CATS = [['go', 'Куда сходить'], ['watch', 'Посмотреть'], ['read', 'Почитать'], ['learn', 'Обучение'], ['opps', 'Возможности']];
+const STATUS = { new: 'Новая', plan: 'В плане', done: 'Выполнена' };
+const catName = c => (CATS.find(x => x[0] === c) || [0, ''])[1];
+function getIdeas() { return (JSON.parse(JSON.stringify(Store.get('ideas') || {})).items) || []; }
+function saveIdeas(items) { Store.set('ideas', items.length ? { items } : null); }
+function updateIdea(id, fn) {
+  const items = getIdeas(), it = items.find(x => x.id === id);
+  if (!it) return null;
+  fn(it);
+  saveIdeas(items);
+  return it;
+}
+const stepsProgress = it => it.steps.length ? `${it.steps.filter(s => s.done).length} из ${it.steps.length} ${plural(it.steps.length, ['шага', 'шагов', 'шагов'])}` : '';
+
+function setStepDone(ideaId, stepId, done, fromDay) {
+  let step;
+  const it = updateIdea(ideaId, i => {
+    step = i.steps.find(x => x.id === stepId);
+    if (!step) return;
+    if (done) step.done = true; else delete step.done;
+  });
+  if (!it || !step) return;
+  if (!fromDay && step.day) {                   // и задачу в календаре
+    const d = getDay(step.day), t = d.tasks.find(x => x.step === stepId);
+    if (t) { t.done = !!done; saveDay(step.day, d); }
+  }
+  if (done && it.status !== 'done' && it.steps.every(s => s.done)) {
+    ask(`Все шаги идеи «${it.text}» выполнены. Отметить идею выполненной и убрать в архив?`).then(ok => {
+      if (!ok) return;
+      updateIdea(ideaId, i => { i.status = 'done'; });
+      haptic.ok(); toast('Идея выполнена — она в архиве'); render();
+    });
+  }
+}
+
+/* ---------- список идей ---------- */
+const ideaUI = { cat: 'all', archive: false, pick: null };
+function renderIdeas() {
+  const items = getIdeas();
+  const doneN = items.filter(i => i.status === 'done').length;
+  $('#iCats').innerHTML = [['all', 'Все'], ...CATS].map(([k, n]) =>
+    `<button class="chip${ideaUI.cat === k ? ' on' : ''}" data-cat="${k}" role="tab" aria-selected="${ideaUI.cat === k}">${n}</button>`).join('');
+  const list = items.filter(i => (ideaUI.archive ? i.status === 'done' : i.status !== 'done') && (ideaUI.cat === 'all' || i.cat === ideaUI.cat));
+  $('#iList').innerHTML = list.length ? list.map(i => {
+    const done = i.steps.filter(s => s.done).length;
+    return `<button class="idea" data-id="${i.id}"><span class="idea-top"><span class="badge ${i.status}">${STATUS[i.status]}</span><span class="meta">${catName(i.cat)}${i.link ? ' · 🔗' : ''}</span></span>`
+      + `<b>${esc(i.text)}</b>${i.steps.length ? `<span class="meta">${stepsProgress(i)}</span>${bar(done, i.steps.length)}` : ''}</button>`;
+  }).join('') : `<div class="card empty" style="margin-top:8px"><p>${ideaUI.archive ? 'В архиве пока пусто' : 'Здесь пока нет идей — нажмите «+ Идея»'}</p></div>`;
+  $('#iArch').textContent = ideaUI.archive ? '← К идеям' : `Архив · ${doneN}`;
+  $('#iArch').hidden = !ideaUI.archive && !doneN;
+  const p = ideaUI.pick;
+  $('#iPickBox').innerHTML = p ? `<div class="card pick"><span class="meta">🎲 ${p.title}</span><b>${esc(p.text)}</b>`
+    + `<div class="pick-btns"><button class="chip" data-open="${p.id}">Открыть</button><button class="chip" id="iPickAgain">Другое</button><button class="chip" id="iPickClose" aria-label="Закрыть">×</button></div></div>` : '';
+}
+$('#iCats').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { ideaUI.cat = b.dataset.cat; haptic.tap(); renderIdeas(); } });
+$('#iList').addEventListener('click', e => { const b = e.target.closest('.idea'); if (b) openIdea(b.dataset.id); });
+$('#iArch').addEventListener('click', () => { ideaUI.archive = !ideaUI.archive; renderIdeas(); window.scrollTo(0, 0); });
+
+function pickIdea() {
+  const cands = [];
+  getIdeas().filter(i => i.status !== 'done').forEach(i => {
+    const next = i.steps.find(s => !s.done);
+    const started = i.status === 'plan' || i.steps.some(s => s.done);
+    if (next && started) cands.push({ id: i.id, title: 'Следующий шаг начатой идеи', text: `${i.text}: ${next.text}` + (next.min ? ` (~${next.min} мин)` : '') });
+    else cands.push({ id: i.id, title: 'Случайная идея', text: i.text });
+  });
+  if (!cands.length) { toast('Идей пока нет — добавьте первую'); return; }
+  let c, n = 0;
+  do c = cands[Math.floor(Math.random() * cands.length)];
+  while (cands.length > 1 && ideaUI.pick && c.text === ideaUI.pick.text && ++n < 20);
+  ideaUI.pick = c;
+  haptic.tap();
+  renderIdeas();
+}
+$('#iPick').addEventListener('click', pickIdea);
+$('#iAdd').addEventListener('click', () => openIdea(null));
+$('#iPickBox').addEventListener('click', e => {
+  if (e.target.closest('#iPickAgain')) pickIdea();
+  else if (e.target.closest('#iPickClose')) { ideaUI.pick = null; renderIdeas(); }
+  else { const b = e.target.closest('[data-open]'); if (b) openIdea(b.dataset.open); }
+});
+
+/* ---------- окно идеи (сохраняется само) ---------- */
+const ide = { id: null, cat: 'go' };
+function openIdea(id) {
+  const it = id ? getIdeas().find(x => x.id === id) : null;
+  if (id && !it) return;
+  ide.id = id;
+  ide.cat = it ? it.cat : (ideaUI.cat !== 'all' ? ideaUI.cat : 'go');
+  $('#iText').value = it ? it.text : '';
+  $('#iLink').value = it && it.link || '';
+  $('#iNote').value = it && it.note || '';
+  $('#iStepsAdd').value = '';
+  SCREENS.idea = it ? 'Идея' : 'Новая идея';
+  openScreen('idea');
+  renderIdeaBits();
+  if (!it) $('#iText').focus();
+}
+function renderIdeaBits() {
+  const it = ide.id ? getIdeas().find(x => x.id === ide.id) : null;
+  $('#iCat').innerHTML = CATS.map(([k, n]) => `<button class="${ide.cat === k ? 'on' : ''}" data-cat="${k}" aria-pressed="${ide.cat === k}">${n}</button>`).join('');
+  $$('#iStatus button').forEach(b => { const on = !!it && b.dataset.st === it.status; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  const link = $('#iLink').value.trim();
+  $('#iOpen').hidden = !/^https?:\/\/\S+/i.test(link);
+  const steps = it ? it.steps : [];
+  $('#iSteps').innerHTML = steps.map((s, n) => `<div class="task${s.done ? ' done' : ''}" data-sid="${s.id}">`
+    + `<button class="chk" role="checkbox" aria-checked="${!!s.done}" aria-label="Шаг выполнен">${ICON_CHECK}</button>`
+    + `<div class="t"><span class="tx">${n + 1}. ${esc(s.text)}</span><span class="meta">~${s.min} мин${s.day ? ' · 📅 ' + dayTitle(s.day).toLowerCase() : ''}</span></div>`
+    + `<button class="del" aria-label="Удалить шаг">×</button></div>`).join('');
+  $('#iProg').textContent = it && it.steps.length ? '· ' + stepsProgress(it) : '';
+  $('#iPlan').textContent = it && it.steps.some(s => s.day && !s.done) ? 'Перепланировать' : 'Запланировать';
+  $('#iDel').hidden = !it;
+}
+function saveIdeaFields() {                       // сохраняем текст, раздел, ссылку, комментарий
+  const text = $('#iText').value.trim();
+  const items = getIdeas();
+  let it = items.find(x => x.id === ide.id);
+  if (!it) {
+    if (!text) return null;
+    it = { id: 'i' + newId(), text, cat: ide.cat, status: 'new', steps: [], created: isoDate(new Date()) };
+    items.unshift(it);
+    ide.id = it.id;
+    SCREENS.idea = 'Идея';
+  }
+  if (text) it.text = text;
+  it.cat = ide.cat;
+  it.link = $('#iLink').value.trim() || undefined;
+  it.note = $('#iNote').value.trim() || undefined;
+  saveIdeas(items);
+  return it;
+}
+['#iText', '#iLink', '#iNote'].forEach(s => $(s).addEventListener('input', () => { saveIdeaFields(); renderIdeaBits(); }));
+$('#iCat').addEventListener('click', e => { const b = e.target.closest('[data-cat]'); if (b) { ide.cat = b.dataset.cat; haptic.tap(); saveIdeaFields(); renderIdeaBits(); } });
+$('#iStatus').addEventListener('click', e => {
+  const b = e.target.closest('[data-st]');
+  if (!b) return;
+  if (!saveIdeaFields()) { toast('Сначала напишите идею'); return; }
+  updateIdea(ide.id, i => { i.status = b.dataset.st; });
+  haptic.tap();
+  if (b.dataset.st === 'done') toast('Идея выполнена — она в архиве');
+  renderIdeaBits();
+});
+$('#iOpen').addEventListener('click', () => {
+  const url = $('#iLink').value.trim();
+  try { if (inTG && ver('6.1')) { tg.openLink(url); return; } } catch (e) {}
+  window.open(url, '_blank', 'noopener');
+});
+$('#iStepsBtn').addEventListener('click', () => {
+  // каждая строка — шаг; номера и маркеры в начале строки («1.», «2)», «-», «•») убираем
+  const lines = $('#iStepsAdd').value.split('\n').map(l => l.replace(/^\s*(\d+[.)]|[-–—•*])\s*/, '').trim()).filter(Boolean);
+  if (!lines.length) { toast('Напишите шаги — каждый с новой строки'); return; }
+  if (!saveIdeaFields()) { toast('Сначала напишите идею'); $('#iText').focus(); return; }
+  const min = Math.max(5, Math.round(+$('#iMin').value) || 30);
+  updateIdea(ide.id, i => { lines.forEach(text => i.steps.push({ id: 's' + newId(), text, min })); });
+  $('#iStepsAdd').value = '';
+  haptic.ok();
+  toast(`Добавлено ${lines.length} ${plural(lines.length, ['шаг', 'шага', 'шагов'])}`);
+  renderIdeaBits();
+});
+$('#iSteps').addEventListener('click', e => {
+  const row = e.target.closest('.task');
+  if (!row) return;
+  const sid = row.dataset.sid, it = getIdeas().find(x => x.id === ide.id), s = it && it.steps.find(x => x.id === sid);
+  if (!s) return;
+  if (e.target.closest('.chk')) {
+    s.done ? haptic.tap() : haptic.ok();
+    setStepDone(ide.id, sid, !s.done, false);
+    renderIdeaBits();
+  } else if (e.target.closest('.del')) {
+    if (s.day && !s.done) { const d = getDay(s.day); d.tasks = d.tasks.filter(t => t.step !== sid); saveDay(s.day, d); }
+    updateIdea(ide.id, i => { i.steps = i.steps.filter(x => x.id !== sid); });
+    renderIdeaBits();
+  } else if (e.target.closest('.t') && !row.querySelector('input')) {
+    inlineEdit(row.querySelector('.t'), s.text, 'Шаг', text => {
+      if (text) updateIdea(ide.id, i => { const x = i.steps.find(y => y.id === sid); if (x) x.text = text; });
+    }, renderIdeaBits);
+  }
+});
+$('#iDel').addEventListener('click', async () => {
+  const it = getIdeas().find(x => x.id === ide.id);
+  if (!it || !await ask(`Удалить идею «${it.text}»? Её будущие шаги уберутся из календаря.`)) return;
+  it.steps.forEach(s => { if (s.day && !s.done) { const d = getDay(s.day); d.tasks = d.tasks.filter(t => t.step !== s.id); saveDay(s.day, d); } });
+  saveIdeas(getIdeas().filter(x => x.id !== it.id));
+  if (ideaUI.pick && ideaUI.pick.id === it.id) ideaUI.pick = null;
+  toast('Идея удалена');
+  back();
+});
+
+/* ---------- «Запланировать»: свой месяц, ближайшие свободные дни, по шагу в день ---------- */
+let planDraft = null;
+function busyScore(iso) {                          // сколько в дне задач, планов и повторов
+  const d = Store.get(dayKey(iso));
+  return (d ? (d.tasks || []).length + Object.keys(d.plan || {}).length : 0) + rulesFor(iso).length;
+}
+function pickMonth(ideaId) {                       // первый месяц, не занятый другой запланированной идеей
+  const used = new Set(getIdeas().filter(i => i.id !== ideaId && i.status === 'plan' && i.month).map(i => i.month));
+  const dt = new Date(); dt.setDate(1);
+  for (let k = 0; k < 60; k++) {
+    const ym = isoDate(dt).slice(0, 7);
+    if (!used.has(ym)) return ym;
+    dt.setMonth(dt.getMonth() + 1);
+  }
+  return isoDate(new Date()).slice(0, 7);
+}
+function proposePlan(it) {
+  const todo = it.steps.filter(s => !s.done);
+  const steps = todo.length ? todo : [{ id: null, text: it.text, min: 30 }];   // без шагов — сама идея одним шагом
+  const ym = pickMonth(it.id), tomorrow = addDays(isoDate(new Date()), 1);
+  const start = tomorrow.slice(0, 7) === ym ? tomorrow : (ym + '-01' > tomorrow ? ym + '-01' : tomorrow);
+  const days = [];
+  for (let d = start; d.slice(0, 7) === ym; d = addDays(d, 1)) days.push(d);
+  if (!days.length) days.push(start);
+  while (days.length < steps.length) days.push(addDays(days[days.length - 1], 1));   // шагов больше, чем дней — дальше по порядку
+  const scored = days.map((d, i) => ({ d, s: busyScore(d), i }));
+  const free = scored.filter(x => x.s <= 1);                                         // «свободный» — не больше одного дела
+  const chosen = (free.length >= steps.length ? free.slice(0, steps.length)
+    : [...free, ...scored.filter(x => x.s > 1).sort((a, b) => a.s - b.s || a.i - b.i).slice(0, steps.length - free.length)])
+    .sort((a, b) => a.i - b.i).map(x => x.d);
+  return { ideaId: it.id, month: ym, rows: steps.map((s, i) => ({ stepId: s.id, text: s.text, min: s.min, day: chosen[i] })) };
+}
+$('#iPlan').addEventListener('click', () => {
+  const it = saveIdeaFields();
+  if (!it) { toast('Сначала напишите идею'); $('#iText').focus(); return; }
+  if (it.steps.length && it.steps.every(s => s.done)) { toast('Все шаги уже выполнены'); return; }
+  planDraft = proposePlan(it);
+  openScreen('plan');
+});
+function renderPlan() {
+  if (!planDraft) return;
+  const [y, m] = planDraft.month.split('-').map(Number), today = isoDate(new Date());
+  $('#pInfo').textContent = `Месяц этой идеи — ${MONTHS[m - 1].toLowerCase()} ${y}. Выбраны ближайшие свободные дни, по одному шагу в день. Дату любого шага можно поменять.`;
+  $('#pRows').innerHTML = planDraft.rows.map((r, i) => `<div class="frow plan-row"><span>${i + 1}. ${esc(r.text)}<br><small class="meta">~${r.min} мин</small></span>`
+    + `<input type="date" data-i="${i}" value="${r.day}" min="${today}" aria-label="Дата шага ${i + 1}"></div>`).join('');
+}
+$('#pRows').addEventListener('change', e => {
+  const inp = e.target.closest('input[type=date]');
+  if (inp && inp.value) planDraft.rows[+inp.dataset.i].day = inp.value;
+});
+$('#pCancel').addEventListener('click', back);
+$('#pSave').addEventListener('click', () => {
+  const p = planDraft;
+  if (!p) return;
+  const items = getIdeas(), it = items.find(x => x.id === p.ideaId);
+  if (!it) return;
+  // прежние незавершённые шаги убираем из календаря (перепланирование)
+  it.steps.forEach(s => {
+    if (s.day && !s.done) { const d = getDay(s.day); d.tasks = d.tasks.filter(t => t.step !== s.id); saveDay(s.day, d); delete s.day; }
+  });
+  p.rows.forEach(r => {
+    let s = it.steps.find(x => x.id === r.stepId);
+    if (!s) { s = { id: 's' + newId(), text: r.text, min: r.min }; it.steps.push(s); }
+    s.day = r.day;
+    const d = getDay(r.day);
+    d.tasks.push({ id: newId(), text: s.text === it.text ? it.text : `${it.text}: ${s.text}`, done: false, idea: it.id, step: s.id, dur: s.min });
+    saveDay(r.day, d);
+  });
+  it.status = 'plan';
+  it.month = p.month;
+  saveIdeas(items);
+  planDraft = null;
+  haptic.ok();
+  const first = p.rows.map(r => r.day).sort()[0];
+  toast(`Шаги в календаре, первый — ${dayTitle(first).toLowerCase()}`);
+  back();
+});
+
 /* ================= Поиск по дневнику ================= */
 function renderSearch() {
   const q = $('#qInput').value.trim().toLowerCase(), box = $('#qRes');
@@ -1705,7 +2057,8 @@ Store.on(what => {
   const top = nav.stack[nav.stack.length - 1];
   if (top === 'settings') what === 'change' ? renderSettings() : renderStatus();
   else if (what === 'change') {
-    if (top === 'task' || top === 'habit') return;   // окна правки не трогаем, пока они открыты
+    if (['task', 'habit', 'plan'].includes(top)) return;   // окна правки не трогаем, пока они открыты
+    if (top === 'idea') { if (!document.activeElement || !document.activeElement.closest('#scr-idea input, #scr-idea textarea')) renderIdeaBits(); return; }
     // не перерисовываем страницу дня, пока в ней что-то печатают
     if (document.activeElement && document.activeElement.closest('#scr-day input, #scr-day textarea, #scr-habits input')) return;
     render();
