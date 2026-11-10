@@ -317,6 +317,147 @@ input[type=date]{
 .gsrow input[type=date]{width:136px; padding:6px 6px; font-size:16px}
 #gList .empty{grid-column:1 / -1}
 
+/* ===== V2 этап 2: задачи, планер, список ===== */
+.task.cancel .tx{color:var(--hint); text-decoration:line-through}
+.chips.wrap{flex-wrap:wrap; margin:0; padding:0; overflow:visible}
+.calview{margin-bottom:10px}
+.calview button{padding:9px 4px}
+.pl-wrap{display:grid; gap:12px}
+.pl-main{order:-1}                                   /* на телефоне сначала неделя, потом цели и заметки */
+.pl-side{display:grid; gap:10px; align-content:start}
+.pl-side .card{padding:12px 14px}
+.pl-side h3{margin:0 0 6px; color:var(--btn); font-size:16px}
+.pl-today small{display:block; color:var(--hint); font-size:12px}
+.pl-today b{font-size:16px}
+.tgl{display:flex; align-items:center; gap:8px; width:100%; padding:7px 0; border-bottom:1px solid var(--sep); font-size:14px; text-align:left}
+.tgl:last-child{border-bottom:0}
+.tgl i{flex:none; width:10px; height:10px; border-radius:50%}
+.tgl span{flex:1; min-width:0; word-break:break-word}
+.tgl.done span{color:var(--hint); text-decoration:line-through}
+.tgl b{color:var(--hint); font-size:13px; font-weight:600}
+.top3{display:flex; align-items:center; gap:8px; margin-top:6px}
+.top3 b{flex:none; width:14px; color:var(--btn)}
+.top3 input{padding:8px 10px}
+#plNotes{min-height:100px}
+.pl-wnav{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px}
+.pl-wnav b{font-size:16px}
+.pl-head, .pl-wl{display:none}
+.pl-week{margin-bottom:12px}
+.pl-week:not(.cur){display:none}
+.pl-days{display:grid; gap:8px}
+.pl-day{min-height:56px; padding:8px 10px; border-radius:12px; background:var(--card)}
+.pl-day.out{opacity:.5}
+.pl-day.today{box-shadow:inset 0 0 0 2px var(--btn)}
+.pl-day.dayoff{background:#eefaf3}
+.pl-dh{display:flex; align-items:center; gap:6px; width:100%; margin-bottom:4px; padding:4px 8px; border-radius:8px; background:var(--wd); font-size:13px; text-align:left}
+.pl-dh span{flex:1}
+.pl-dh b{font-size:14px}
+.pl-t{display:flex; align-items:flex-start; gap:6px; padding:3px 0; font-size:14px; line-height:1.3}
+.pl-t .chk{width:18px; height:18px; margin-top:1px; border-width:1.5px}
+.pl-t .chk svg{width:11px; height:11px}
+.pl-t.done .chk{background:var(--btn); border-color:var(--btn); color:#fff}
+.pl-t.done .chk svg{opacity:1}
+.pl-t.done .pl-tx, .pl-t.cancel .pl-tx{color:var(--hint); text-decoration:line-through}
+.pl-t.dl .pl-tx{color:var(--danger)}
+.pl-tx{flex:1; min-width:0; word-break:break-word; cursor:pointer}
+.pl-add{margin-top:2px; color:var(--hint); font-size:13px}
+.tl-f{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px}
+.tl-head{display:none}
+.tl-row{display:flex; flex-wrap:wrap; align-items:center; gap:4px 10px; margin-top:6px; padding:10px 12px; border-radius:12px; background:var(--card)}
+.tl-row .chk{width:24px; height:24px}
+.tl-row.done .chk{background:var(--btn); border-color:var(--btn); color:#fff}
+.tl-row.done .chk svg{opacity:1}
+.tl-name{flex:1 1 60%; min-width:0; font-weight:500; word-break:break-word; cursor:pointer}
+.tl-row.done .tl-name, .tl-row.cancel .tl-name{color:var(--hint); text-decoration:line-through}
+.tl-row.dl .tl-name{color:var(--danger)}
+.tl-meta{display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; width:100%; padding-left:34px; font-size:13px; color:var(--hint)}
+.tl-meta span:empty{display:none}
+.tl-note{width:100%; padding-left:34px; font-size:13px; color:var(--hint); word-break:break-word}
+.tl-note:empty{display:none}
+.badge.st-work{background:#ece9fb; color:var(--btn)}
+.badge.st-late{background:#fdf0d5; color:#a7781a}
+.badge.st-done{background:#e3f6ea; color:#2d8f5c}
+.badge.st-cancel{background:#efedf3; color:var(--hint)}
+@media (min-width:900px){
+  .pl-wrap{grid-template-columns:230px 1fr; align-items:start}
+  .pl-main{order:0}
+  .pl-wnav{display:none}
+  .pl-head{display:grid; grid-template-columns:28px repeat(7, 1fr); gap:6px; margin-bottom:6px}
+  .pl-head div{padding:6px 2px; border-radius:8px; font-size:13px; font-weight:600; text-align:center}
+  .pl-week, .pl-week:not(.cur){display:grid; grid-template-columns:28px 1fr; gap:6px; margin-bottom:8px}
+  .pl-wl{display:block; padding:8px 0; border-radius:8px; background:var(--card); color:var(--btn); font-size:12px; font-weight:600; text-align:center; writing-mode:vertical-rl; transform:rotate(180deg)}
+  .pl-days{grid-template-columns:repeat(7, 1fr); gap:6px}
+  .pl-day{min-height:110px; padding:6px}
+  .pl-dh{padding:2px 6px}
+  .pl-dh span{display:none}
+  .pl-t{font-size:13px}
+  .tl-head, .tl-row{display:grid; grid-template-columns:24px minmax(180px, 2fr) 110px 150px 130px 120px minmax(120px, 1.5fr); gap:10px; align-items:center}
+  .tl-head{padding:8px 12px; border-radius:10px; background:var(--w3); color:var(--text); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+  .tl-meta{display:contents}
+  .tl-meta span:empty{display:block}
+  .tl-note, .tl-note:empty{display:block; padding-left:0}
+}
+
+/* ===== V2 этап 2: дашборд привычек ===== */
+.dash{display:grid; gap:10px}
+#hDashTop{margin-bottom:6px}
+#hDashBottom{margin-top:12px}
+.dhead{display:flex; flex-wrap:wrap; align-items:center; gap:10px 20px; background:linear-gradient(120deg, #e3f6ea, #efecfb)}
+.dhead h2{margin:0; color:var(--btn); font-size:26px}
+.dm{display:flex; flex:1; justify-content:space-around; gap:10px; text-align:center}
+.dm small{display:block; color:var(--hint); font-size:12px}
+.dm b{font-size:20px}
+.drings{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px}
+.dring{padding:12px 8px; text-align:center}
+.dring .ring{width:110px; height:110px; margin:4px auto}
+.dr-t{color:var(--btn); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em}
+.dr-n{color:var(--hint); font-size:13px}
+.dcard h3{margin:0 0 8px; color:var(--btn); font-size:16px}
+.chart-svg{display:block; width:100%; height:auto}
+.chart-svg text{fill:var(--hint); font-size:11px; font-family:inherit}
+.hbar{display:grid; grid-template-columns:minmax(90px, 38%) 1fr; align-items:center; gap:8px; margin-top:6px; font-size:13px}
+.hbar span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.hbar div{height:20px; border-radius:6px; background:#f1eff7; overflow:hidden}
+.hbar i{display:flex; align-items:center; justify-content:flex-end; height:100%; min-width:22px; padding:0 6px; border-radius:6px; color:#fff; font-size:12px; font-style:normal; font-weight:700}
+.best{margin:10px 0 0; font-size:14px}
+.best b{color:var(--btn)}
+.hstat{display:grid; grid-template-columns:minmax(90px, 1.3fr) 48px 1fr 44px; align-items:center; gap:8px; min-height:34px; border-bottom:1px solid var(--sep); font-size:13px}
+.hstat:last-child{border-bottom:0}
+.hstat span:first-child{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.hstat .bar{margin:0}
+.hstat.head{color:var(--hint); font-size:11px; font-weight:700; text-transform:uppercase; min-height:24px}
+.mtable-wrap{display:none}
+@media (min-width:900px){
+  .dhead{grid-column:1 / -1}
+  .drings{grid-template-columns:repeat(4, 1fr)}
+  .dash2{display:grid; grid-template-columns:2fr 1fr; gap:10px}
+  #hDashBottom{grid-template-columns:1fr 1fr}
+  #hDashBottom .wide-row{grid-column:1 / -1}
+  .mtable-wrap{display:block; overflow-x:auto}
+  .app.wide #hList{display:grid; grid-template-columns:repeat(auto-fill, minmax(330px, 1fr)); gap:10px}
+  .app.wide #hList > *:not(.hab){grid-column:1 / -1}
+  .app.wide .hab + .hab{margin-top:0}
+  .app.wide .hbtns{display:flex; gap:8px}
+  .app.wide .hbtns > *{flex:1; margin:0 !important}
+}
+.dash2{display:grid; gap:10px}
+.mtable{width:100%; border-collapse:separate; border-spacing:2px; font-size:12px}
+.mtable th, .mtable td{padding:0; text-align:center; font-weight:500}
+.mtable th.hn{min-width:130px; padding:4px 8px; text-align:left; font-size:13px; white-space:nowrap}
+.mtable thead th{padding:3px 0; border-radius:6px}
+.mtable .wkh{color:var(--text); font-weight:700}
+.mtable td{border-radius:6px}
+.mtable .wk1{background:var(--w1)} .mtable .wk2{background:var(--w2)} .mtable .wk3{background:var(--w3)} .mtable .wk4{background:var(--w4)} .mtable .wk5{background:var(--w5)} .mtable .wk6{background:var(--w1)}
+.tc{width:100%; min-width:24px; height:26px; border-radius:6px; color:var(--btn); font-size:13px; font-weight:700}
+.tc.on{background:var(--btn); color:#fff}
+.tc[disabled]{opacity:.3; cursor:default}
+.tc.sum{font-size:10px; color:var(--text)}
+.tc.sum.on{background:#f2c46d; color:var(--text)}
+.mtable .today{box-shadow:inset 0 0 0 2px var(--btn)}
+.mtable tfoot th, .mtable tfoot td{padding:3px 0; color:var(--hint); font-size:11px}
+.mtable tfoot th{text-align:left; padding-left:8px}
+.mtable .tot{min-width:52px; color:var(--btn); font-weight:700}
+
 /* ===== Этап 7: помодоро и настройки ===== */
 .pomo-btn{width:auto; min-width:40px; padding:0 8px; gap:4px; display:flex}
 .pomo-btn span{font-size:14px; font-weight:600; color:var(--danger); font-variant-numeric:tabular-nums}
@@ -387,14 +528,51 @@ select{
   <main>
     <!-- Вкладка 1. Календарь: месяц -->
     <section class="screen" id="scr-calendar">
-      <div class="mbar">
+      <div class="seg seg3 calview" id="calView" role="tablist" aria-label="Вид календаря">
+        <button data-v="month">Месяц</button><button data-v="planner">Планер</button><button data-v="list">Задачи</button>
+      </div>
+      <div class="mbar" id="mBar">
         <button class="icon-btn" id="mPrev" aria-label="Предыдущий месяц"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
         <h2 id="mTitle">месяц</h2>
         <button class="icon-btn" id="mNext" aria-label="Следующий месяц"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
         <button class="chip" id="mToday">Сегодня</button>
       </div>
-      <div class="grid" id="mGrid"></div>
-      <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span></p>
+      <div id="calMonth">
+        <div class="grid" id="mGrid"></div>
+        <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span></p>
+      </div>
+
+      <!-- Месячный планер -->
+      <div id="calPlanner" hidden>
+        <div class="pl-wrap">
+          <aside class="pl-side">
+            <div class="card pl-today"><small>Сегодня</small><b id="plToday"></b></div>
+            <div class="card"><h3>Топ целей</h3><div id="plGoals"></div></div>
+            <div class="card"><h3>Топ-3 приоритета</h3>
+              <label class="top3"><b>1</b><input type="text" data-top="0" placeholder="Самое важное" spellcheck="false" autocorrect="off"></label>
+              <label class="top3"><b>2</b><input type="text" data-top="1" spellcheck="false" autocorrect="off"></label>
+              <label class="top3"><b>3</b><input type="text" data-top="2" spellcheck="false" autocorrect="off"></label>
+            </div>
+            <div class="card"><h3>Заметки</h3><textarea id="plNotes" rows="4" placeholder="Оплатить квартиру до 27.11…" spellcheck="false" autocorrect="off"></textarea></div>
+          </aside>
+          <div class="pl-main">
+            <div class="pl-wnav">
+              <button class="icon-btn" id="plPrev" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+              <b id="plWeekTitle"></b>
+              <button class="icon-btn" id="plNext" aria-label="Следующая неделя"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+            </div>
+            <div class="pl-head" id="plHead"></div>
+            <div id="plWeeks"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Список задач -->
+      <div id="calList" hidden>
+        <div id="tlFilters"></div>
+        <div class="tl-head"><span></span><span>Задача</span><span>Дата</span><span>Приоритет</span><span>Статус</span><span>Категория</span><span>Примечание</span></div>
+        <div id="tlRows"></div>
+      </div>
     </section>
 
     <!-- Страница дня -->
@@ -431,6 +609,7 @@ select{
 
     <!-- Вкладка 2. Дела (этап 4) -->
     <section class="screen" id="scr-habits" hidden>
+      <div class="dash" id="hDashTop"></div>
       <div class="mbar">
         <button class="icon-btn" id="wPrev" aria-label="Предыдущая неделя"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
         <h2 id="wTitle">неделя</h2>
@@ -438,6 +617,7 @@ select{
         <button class="chip" id="wNow">Сейчас</button>
       </div>
       <div id="hList"></div>
+      <div class="dash" id="hDashBottom"></div>
       <div id="hHidden"></div>
       <div class="hbtns">
         <button class="btn-line" id="hAdd">+ Добавить привычку</button>
@@ -615,6 +795,23 @@ select{
         <p class="hint">Повторяющаяся задача записывается один раз и сама появляется в нужных днях.</p>
       </div>
 
+      <div id="tDetails">
+        <h2 class="sec-h">Приоритет</h2>
+        <div class="card"><div class="seg" id="tPrio">
+          <button data-p="">Без приоритета</button><button data-p="m">⚡ Средний</button>
+          <button data-p="h">🔥 Высокий</button><button data-p="vh">‼ Очень высокий</button>
+        </div></div>
+        <h2 class="sec-h">Статус</h2>
+        <div class="card"><div class="seg" id="tStat">
+          <button data-s="todo">Не начато</button><button data-s="work">✏️ В работе</button>
+          <button data-s="done">✅ Готово</button><button data-s="cancel">❌ Отмена</button>
+        </div><p class="hint">«⌛ Просрочено» ставится само, если день прошёл, а задача не готова.</p></div>
+        <h2 class="sec-h">Категория</h2>
+        <div class="card"><div class="chips wrap" id="tCat"></div></div>
+        <h2 class="sec-h">Примечание</h2>
+        <div class="card"><textarea id="tNote" rows="2" placeholder="Например: не забыть выпить воды" spellcheck="false" autocorrect="off"></textarea></div>
+      </div>
+
       <button class="btn" id="tSave" style="margin-top:16px">Сохранить</button>
       <button class="btn-line" id="tPomo">⏱ Таймер концентрации</button>
       <button class="btn-line" id="tMove">Перенести на завтра</button>
@@ -689,7 +886,7 @@ select{
         <p class="hint">Копия — это все задачи, привычки, идеи и дневник одним файлом. Удобно хранить её в «Избранном» Telegram.</p>
       </div>
 
-      <p class="hint center">Версия 2 · этап 1: пастель и цели</p>
+      <p class="hint center">Версия 2 · этап 2: дашборд и задачи</p>
     </section>
   </main>
 </div>
@@ -1020,7 +1217,7 @@ const Store = (() => {
 
 /* ================= Навигация ================= */
 const TABS = { calendar: 'Календарь', habits: 'Дела', goals: 'Цели', ideas: 'Идеи' };
-const WIDE = new Set(['goals']);                  // экраны, которым на ноутбуке нужна вся ширина
+const WIDE = new Set(['goals', 'habits']);                  // экраны, которым на ноутбуке нужна вся ширина
 const SCREENS = { settings: 'Настройки', day: 'День', task: 'Задача', search: 'Поиск по дневнику', habit: 'Привычка', stats: 'Статистика', summary: 'Итоги недели', idea: 'Идея', plan: 'План по дням', pomo: 'Концентрация', goal: 'Цель' };
 const nav = { tab: 'calendar', stack: [], day: isoDate(new Date()) };
 try { const t = localStorage.getItem('pl~tab'); if (TABS[t]) nav.tab = t; } catch (e) {}
@@ -1053,7 +1250,7 @@ function render() {
   if (screen === 'plan') renderPlan();
   if (screen === 'goals') renderGoals();
   if (screen === 'goal') renderGoalEd();
-  $('.app').classList.toggle('wide', WIDE.has(screen));
+  $('.app').classList.toggle('wide', WIDE.has(screen) || (screen === 'calendar' && cal.view !== 'month'));
   if (screen === 'settings') renderSettings();
 }
 function openScreen(name) { nav.stack.push(name); render(); window.scrollTo(0, 0); }
@@ -1124,9 +1321,164 @@ function dayTasks(iso, d) {                   // свои задачи дня + 
     .sort((a, b) => (a[0].time ? 0 : 1) - (b[0].time ? 0 : 1) || (a[0].time || '').localeCompare(b[0].time || '') || a[1] - b[1])
     .map(x => x[0]);
 }
-const clean = t => { if (!t.time) delete t.time; if (!t.deadline) delete t.deadline; return t; };
+const clean = t => { ['time', 'deadline', 'prio', 'cat', 'note', 'cancel', 'work'].forEach(k => { if (!t[k]) delete t[k]; }); return t; };
 
+/* Задачи (версия 2): prio 'm'|'h'|'vh', статус — поля done / work / cancel, «просрочено» считается само, cat, note */
+const PRIO = { vh: ['‼', 'Очень высокий'], h: ['🔥', 'Высокий'], m: ['⚡', 'Средний'] };
+const PRIO_RANK = { vh: 0, h: 1, m: 2 };
+const TSTATUS = { todo: ['', 'Не начато'], work: ['✏️', 'В работе'], late: ['⌛', 'Просрочено'], done: ['✅', 'Готово'], cancel: ['❌', 'Отмена'] };
+const TCATS = { health: 'Здоровье', fin: 'Финансы', edu: 'Образование', work: 'Работа', personal: 'Личное', travel: 'Путешествия' };
+function taskStatus(t, iso) {
+  if (t.cancel) return 'cancel';
+  if (t.done) return 'done';
+  if (!t.rec && iso < isoDate(new Date())) return 'late';
+  return t.work ? 'work' : 'todo';
+}
+/* отметить задачу (своя или повтор) — общая для дня, планера и списка */
+function toggleTask(iso, id, rid) {
+  const d = getDay(iso);
+  let on, link;
+  if (rid) { on = !d.rdone[rid]; if (on) d.rdone[rid] = 1; else delete d.rdone[rid]; }
+  else {
+    const t = d.tasks.find(x => x.id === id);
+    if (!t) return;
+    t.done = on = !t.done;
+    if (on) { delete t.cancel; delete t.work; }
+    if (t.idea || t.goal) link = t;
+  }
+  on ? haptic.ok() : haptic.tap();
+  saveDay(iso, d);
+  if (link && link.idea) setStepDone(link.idea, link.step, on, true);        // шаг идеи отмечается и в самой идее
+  if (link && link.goal) setGoalStepDone(link.goal, link.gstep, on, true);   // …и шаг цели — в цели
+  return on;
+}
+
+/* три вида календаря: сетка месяца, месячный планер, список задач */
+cal.view = (() => { try { return localStorage.getItem('pl~calview') || 'month'; } catch (e) { return 'month'; } })();
+cal.f = { st: 'active', prio: '', cat: '' };
 function renderCalendar() {
+  $$('#calView button').forEach(b => { const on = b.dataset.v === cal.view; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); });
+  $('#mBar').hidden = cal.view === 'list';
+  $('#calMonth').hidden = cal.view !== 'month';
+  $('#calPlanner').hidden = cal.view !== 'planner';
+  $('#calList').hidden = cal.view !== 'list';
+  $('#mTitle').textContent = `${MONTHS[cal.m]} ${cal.y}`;
+  if (cal.view === 'month') renderMonthGrid();
+  if (cal.view === 'planner') renderPlanner();
+  if (cal.view === 'list') renderTaskList();
+  $('.app').classList.toggle('wide', cal.view !== 'month');
+}
+$('#calView').addEventListener('click', e => {
+  const b = e.target.closest('[data-v]');
+  if (!b || b.dataset.v === cal.view) return;
+  cal.view = b.dataset.v;
+  try { localStorage.setItem('pl~calview', cal.view); } catch (e2) {}
+  haptic.tap(); renderCalendar();
+});
+
+/* ---------- месячный планер ---------- */
+const WD_FULL = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+const WD_COLORS = ['#fde2cf', '#f9dbe5', '#ece6fb', '#dbe7f6', '#dcf1e3', '#efe3f7', '#fbf0cf'];
+function monthMondays(y, m) {
+  const ym = `${y}-${pad(m + 1)}`, last = `${ym}-${pad(new Date(y, m + 1, 0).getDate())}`, out = [];
+  for (let mon = weekStart(ym + '-01'); mon <= last; mon = addDays(mon, 7)) out.push(mon);
+  return out;
+}
+function renderPlanner() {
+  const { y, m } = cal, ym = `${y}-${pad(m + 1)}`, today = isoDate(new Date());
+  const weeks = monthMondays(y, m);
+  if (cal.pwYm !== ym) { cal.pwYm = ym; const i = weeks.findIndex(w => today >= w && today <= addDays(w, 6)); cal.pw = i >= 0 ? i : 0; }
+  cal.pw = Math.max(0, Math.min(weeks.length - 1, cal.pw));
+  $('#plWeekTitle').textContent = `Неделя ${cal.pw + 1} · ${weekTitle(weeks[cal.pw])}`;
+  $('#plHead').innerHTML = '<div></div>' + WD_FULL.map((w, i) => `<div style="background:${WD_COLORS[i]}">${w}</div>`).join('');
+  $('#plWeeks').innerHTML = weeks.map((mon, wi) => `<div class="pl-week${wi === cal.pw ? ' cur' : ''}"><div class="pl-wl">Неделя ${wi + 1}</div><div class="pl-days">`
+    + weekDays(mon).map((iso, i) => {
+      const d = getDay(iso), list = dayTasks(iso, d), dt = parseIso(iso);
+      const cls = ['pl-day', dt.getMonth() !== m && 'out', iso === today && 'today', d.off && 'dayoff'].filter(Boolean).join(' ');
+      return `<div class="${cls}" style="--wd:${WD_COLORS[i]}"><button class="pl-dh" data-open-day="${iso}"><b>${dt.getDate()}</b><span>${WD_FULL[i]}</span>${d.off ? '🌴' : ''}</button>`
+        + list.map(t => `<div class="pl-t${t.done ? ' done' : ''}${t.cancel ? ' cancel' : ''}${t.deadline && !t.done ? ' dl' : ''}" data-iso="${iso}" ${taskAttr(t)}>`
+          + `<button class="chk" role="checkbox" aria-checked="${!!t.done}" aria-label="Выполнено">${ICON_CHECK}</button>`
+          + `<span class="pl-tx">${t.prio ? PRIO[t.prio][0] + ' ' : ''}${t.time ? t.time + ' ' : ''}${esc(t.text)}</span></div>`).join('')
+        + `<button class="pl-add" data-open-day="${iso}">+ задача</button></div>`;
+    }).join('') + '</div></div>').join('');
+  // боковая колонка
+  const now = new Date();
+  $('#plToday').textContent = `${WD_FULL[(now.getDay() + 6) % 7]}, ${now.getDate()} ${MONTHS_GEN[now.getMonth()]} ${now.getFullYear()}`;
+  const goals = getGoals();
+  $('#plGoals').innerHTML = goals.length ? goals.map(g => {
+    const n = g.steps.length, dn = g.steps.filter(s => s.done).length;
+    return `<button class="tgl${goalDone(g) ? ' done' : ''}" data-to-goals><i style="background:${GOAL_COLORS[g.color % GOAL_COLORS.length].c}"></i><span>${esc(g.title)}</span><b>${n ? Math.round(dn / n * 100) + '%' : '—'}</b></button>`;
+  }).join('') : '<p class="empty-line">Целей пока нет</p>';
+  const b = Store.get('board') || {};
+  $$('[data-top]').forEach(inp => { if (document.activeElement !== inp) inp.value = (b.top || [])[+inp.dataset.top] || ''; });
+  if (document.activeElement !== $('#plNotes')) $('#plNotes').value = b.notes || '';
+}
+function saveBoard() {                              // Топ-3 приоритета и заметки
+  const top = $$('[data-top]').map(i => i.value.trim()), notes = $('#plNotes').value;
+  Store.set('board', top.some(Boolean) || notes.trim() ? { top, notes } : null);
+}
+$$('[data-top]').forEach(i => i.addEventListener('input', saveBoard));
+$('#plNotes').addEventListener('input', saveBoard);
+$('#plGoals').addEventListener('click', e => { if (e.target.closest('[data-to-goals]')) $('.tab[data-tab=goals]').click(); });
+$('#plWeeks').addEventListener('click', e => {
+  const od = e.target.closest('[data-open-day]');
+  if (od) { openDay(od.dataset.openDay); return; }
+  const row = e.target.closest('.pl-t');
+  if (!row) return;
+  if (e.target.closest('.chk')) { toggleTask(row.dataset.iso, row.dataset.id, row.dataset.rid); renderPlanner(); }
+  else openTask(row.dataset.iso, row.dataset.id, row.dataset.rid);
+});
+function plStep(n) {                                // по неделям на телефоне; за краем месяца — соседний месяц
+  const len = monthMondays(cal.y, cal.m).length;
+  cal.pw += n;
+  if (cal.pw < 0 || cal.pw >= len) {
+    const d = new Date(cal.y, cal.m + (n < 0 ? -1 : 1), 1);
+    cal.y = d.getFullYear(); cal.m = d.getMonth();
+    cal.pwYm = `${cal.y}-${pad(cal.m + 1)}`;
+    cal.pw = n < 0 ? 99 : 0;
+    $('#mTitle').textContent = `${MONTHS[cal.m]} ${cal.y}`;
+  }
+  haptic.tap(); renderPlanner();
+}
+$('#plPrev').addEventListener('click', () => plStep(-1));
+$('#plNext').addEventListener('click', () => plStep(1));
+
+/* ---------- список задач ---------- */
+function renderTaskList() {
+  const f = cal.f, today = isoDate(new Date());
+  const all = [];
+  Store.keys('day_').forEach(k => { const d = Store.get(k); ((d && d.tasks) || []).forEach(t => all.push({ iso: k.slice(4), t, st: taskStatus(t, k.slice(4)) })); });
+  const groups = { active: ['todo', 'work', 'late'], late: ['late'], done: ['done'], cancel: ['cancel'], all: null };
+  const count = g => all.filter(x => !groups[g] || groups[g].includes(x.st)).length;
+  const chip = (key, val, label) => `<button class="chip${f[key] === val ? ' on' : ''}" data-f="${key}" data-val="${val}">${label}</button>`;
+  $('#tlFilters').innerHTML =
+    `<div class="tl-f">${chip('st', 'active', `Активные · ${count('active')}`)}${chip('st', 'late', `⌛ Просроченные · ${count('late')}`)}${chip('st', 'done', `✅ Готово · ${count('done')}`)}${chip('st', 'cancel', `❌ Отмена · ${count('cancel')}`)}${chip('st', 'all', 'Все')}</div>`
+    + `<div class="tl-f">${chip('prio', '', 'Любой приоритет')}${Object.entries(PRIO).map(([k, [ic, n]]) => chip('prio', k, ic + ' ' + n)).join('')}</div>`
+    + `<div class="tl-f">${chip('cat', '', 'Все категории')}${Object.entries(TCATS).map(([k, n]) => chip('cat', k, n)).join('')}</div>`;
+  const rows = all.filter(x => (!groups[f.st] || groups[f.st].includes(x.st)) && (!f.prio || x.t.prio === f.prio) && (!f.cat || x.t.cat === f.cat))
+    .sort((a, b) => a.iso.localeCompare(b.iso) || (PRIO_RANK[a.t.prio] ?? 9) - (PRIO_RANK[b.t.prio] ?? 9));
+  if (f.st === 'done' || f.st === 'cancel' || f.st === 'all') rows.reverse();   // готовые — сначала свежие
+  $('#tlRows').innerHTML = rows.length ? rows.slice(0, 300).map(({ iso, t, st }) => {
+    const y = parseIso(iso).getFullYear();
+    return `<div class="tl-row${t.done ? ' done' : ''}${t.cancel ? ' cancel' : ''}${t.deadline && !t.done ? ' dl' : ''}" data-iso="${iso}" data-id="${t.id}">`
+      + `<button class="chk" role="checkbox" aria-checked="${!!t.done}" aria-label="Выполнено">${ICON_CHECK}</button>`
+      + `<span class="tl-name">${esc(t.text)}${t.deadline ? ' · дедлайн' : ''}</span>`
+      + `<span class="tl-meta"><span>${iso === today ? 'сегодня' : dayTitle(iso).toLowerCase()}${y !== new Date().getFullYear() ? ' ' + y : ''}</span>`
+      + `<span>${t.prio ? PRIO[t.prio].join(' ') : ''}</span>`
+      + `<span>${st === 'todo' ? '' : `<span class="badge st-${st}">${TSTATUS[st].join(' ').trim()}</span>`}</span>`
+      + `<span>${t.cat ? TCATS[t.cat] : ''}</span></span>`
+      + `<span class="tl-note">${t.note ? '📝 ' + esc(t.note) : ''}</span></div>`;
+  }).join('') : '<div class="card empty" style="margin-top:8px"><p>Здесь пока пусто</p></div>';
+}
+$('#tlFilters').addEventListener('click', e => { const b = e.target.closest('[data-f]'); if (b) { cal.f[b.dataset.f] = b.dataset.val; haptic.tap(); renderTaskList(); } });
+$('#tlRows').addEventListener('click', e => {
+  const row = e.target.closest('.tl-row');
+  if (!row) return;
+  if (e.target.closest('.chk')) { toggleTask(row.dataset.iso, row.dataset.id); renderTaskList(); }
+  else openTask(row.dataset.iso, row.dataset.id);
+});
+
+function renderMonthGrid() {
   const { y, m } = cal;
   $('#mTitle').textContent = `${MONTHS[m]} ${y}`;
   const offset = (new Date(y, m, 1).getDay() + 6) % 7;
@@ -1156,7 +1508,7 @@ function shiftMonth(n) {
 }
 $('#mPrev').addEventListener('click', () => shiftMonth(-1));
 $('#mNext').addEventListener('click', () => shiftMonth(1));
-$('#mToday').addEventListener('click', () => { const t = new Date(); cal.y = t.getFullYear(); cal.m = t.getMonth(); renderCalendar(); });
+$('#mToday').addEventListener('click', () => { const t = new Date(); cal.y = t.getFullYear(); cal.m = t.getMonth(); cal.pwYm = null; renderCalendar(); });
 $('#mGrid').addEventListener('click', e => {
   const b = e.target.closest('.d');
   if (b) openDay(b.dataset.iso);
@@ -1208,10 +1560,13 @@ function renderDay() {
 
   $('#dTasks').innerHTML = list.length
     ? list.map(t => {
-        const meta = [t.time, t.rec && '↻ ' + repLabel(t.days), t.idea && '💡 шаг идеи', t.goal && '🎯 шаг цели', t.dur && `~${t.dur} мин`, t.deadline && 'дедлайн'].filter(Boolean).join(' · ');
-        return `<div class="task${t.done ? ' done' : ''}${t.deadline ? ' dl' : ''}" ${taskAttr(t)}>`
+        const st = t.rec ? '' : taskStatus(t, iso);
+        const meta = [t.time, t.rec && '↻ ' + repLabel(t.days), t.idea && '💡 шаг идеи', t.goal && '🎯 шаг цели', t.dur && `~${t.dur} мин`,
+          (st === 'work' || st === 'late' || st === 'cancel') && TSTATUS[st].join(' ').toLowerCase(), t.cat && TCATS[t.cat], t.deadline && 'дедлайн'].filter(Boolean).join(' · ');
+        return `<div class="task${t.done ? ' done' : ''}${t.cancel ? ' cancel' : ''}${t.deadline ? ' dl' : ''}" ${taskAttr(t)}>`
           + `<button class="chk" role="checkbox" aria-checked="${!!t.done}" aria-label="Выполнено">${ICON_CHECK}</button>`
-          + `<div class="t"><span class="tx">${esc(t.text)}</span>${meta ? `<span class="meta">${esc(meta)}</span>` : ''}</div>`
+          + `<div class="t"><span class="tx">${t.prio ? PRIO[t.prio][0] + ' ' : ''}${esc(t.text)}</span>${meta ? `<span class="meta">${esc(meta)}</span>` : ''}`
+          + `${t.note ? `<span class="meta">📝 ${esc(t.note)}</span>` : ''}</div>`
           + (t.rec ? '' : `<button class="mv" aria-label="Перенести на завтра" title="Перенести на завтра">${ICON_MOVE}</button>`)
           + `<button class="del" aria-label="Удалить задачу">×</button></div>`;
       }).join('')
@@ -1298,16 +1653,8 @@ $('#dTasks').addEventListener('click', e => {
   const row = e.target.closest('.task');
   if (!row) return;
   const iso = nav.day, id = row.dataset.id, rid = row.dataset.rid;
-  if (e.target.closest('.chk')) {
-    const d = getDay(iso);
-    let on;
-    if (rid) { on = !d.rdone[rid]; if (on) d.rdone[rid] = 1; else delete d.rdone[rid]; }
-    else { const t = d.tasks.find(x => x.id === id); if (!t) return; t.done = on = !t.done; if (t.idea || t.goal) var link = t; }
-    on ? haptic.ok() : haptic.tap();
-    saveDay(iso, d); renderDay();
-    if (link && link.idea) setStepDone(link.idea, link.step, on, true);        // шаг идеи отмечается и в самой идее
-    if (link && link.goal) setGoalStepDone(link.goal, link.gstep, on, true);   // …и шаг цели — в цели
-  } else if (e.target.closest('.mv')) moveToTomorrow(iso, id);
+  if (e.target.closest('.chk')) { toggleTask(iso, id, rid); renderDay(); }
+  else if (e.target.closest('.mv')) moveToTomorrow(iso, id);
   else if (e.target.closest('.del')) deleteTask(iso, id, rid);
   else if (e.target.closest('.t')) openTask(iso, id, rid);
 });
@@ -1328,16 +1675,19 @@ $('#dAddMore').addEventListener('click', () => {
 });
 
 /* ================= Окно задачи: время, дедлайн, повтор ================= */
-const ed = { iso: '', id: null, rid: null, rep: 'none', days: [], dead: false };
+const ed = { iso: '', id: null, rid: null, rep: 'none', days: [], dead: false, prio: '', stat: 'todo', cat: '' };
 function openTask(iso, id, rid, text = '') {
   let t = { text, time: '', deadline: false }, days = [];
+  $('#tNote').value = '';
   if (id) { t = getDay(iso).tasks.find(x => x.id === id); if (!t) return; }
   if (rid) {
     const r = getRecur().find(x => x.id === rid);
     if (!r) return;
     t = { text: r.text, time: r.time || '' }; days = r.days.slice();
   }
-  Object.assign(ed, { iso, id, rid, days, dead: !!t.deadline, rep: rid ? repKind(days) : 'none' });
+  Object.assign(ed, { iso, id, rid, days, dead: !!t.deadline, rep: rid ? repKind(days) : 'none',
+    prio: t.prio || '', cat: t.cat || '', stat: t.cancel ? 'cancel' : t.done ? 'done' : t.work ? 'work' : 'todo' });
+  $('#tNote').value = t.note || '';
   $('#tText').value = t.text;
   $('#tTime').value = t.time || '';
   SCREENS.task = id || rid ? 'Задача' : 'Новая задача';
@@ -1353,7 +1703,15 @@ function renderEditor() {
   $('#tDead').setAttribute('aria-checked', ed.dead);
   $('#tMove').hidden = !ed.id || ed.rep !== 'none';
   $('#tDel').hidden = !ed.id && !ed.rid;
+  $('#tDetails').hidden = ed.rep !== 'none';           // приоритет, статус, категория — у разовых задач
+  $$('#tPrio button').forEach(b => { const on = b.dataset.p === ed.prio; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  $$('#tStat button').forEach(b => { const on = b.dataset.s === ed.stat; b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); });
+  $('#tCat').innerHTML = [['', 'Без категории'], ...Object.entries(TCATS)].map(([k, n]) =>
+    `<button class="chip${ed.cat === k ? ' on' : ''}" data-c="${k}" aria-pressed="${ed.cat === k}">${n}</button>`).join('');
 }
+$('#tPrio').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) { ed.prio = b.dataset.p; haptic.tap(); renderEditor(); } });
+$('#tStat').addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) { ed.stat = b.dataset.s; haptic.tap(); renderEditor(); } });
+$('#tCat').addEventListener('click', e => { const b = e.target.closest('[data-c]'); if (b) { ed.cat = b.dataset.c; haptic.tap(); renderEditor(); } });
 $('#tRep').addEventListener('click', e => {
   const b = e.target.closest('[data-rep]');
   if (!b) return;
@@ -1380,18 +1738,25 @@ $('#tSave').addEventListener('click', () => {
     : ed.rep === 'custom' ? [...ed.days].sort() : [];
   if (ed.rep === 'custom' && !days.length) { toast('Выберите хотя бы один день недели'); return; }
   const { iso, id, rid } = ed, d = getDay(iso);
+  const extra = { prio: ed.prio, cat: ed.cat, note: $('#tNote').value.trim(), work: ed.stat === 'work', cancel: ed.stat === 'cancel' };
   if (ed.rep === 'none') {
     if (rid) {                                  // был повтор → разовая задача в этом дне
-      const done = !!d.rdone[rid];
+      const done = !!d.rdone[rid] || ed.stat === 'done';
       endRule(rid, iso);
       const d2 = getDay(iso);
-      d2.tasks.push(clean({ id: newId(), text, time, deadline: ed.dead, done }));
+      d2.tasks.push(clean({ id: newId(), text, time, deadline: ed.dead, done, ...extra }));
       saveDay(iso, d2);
     } else if (id) {
       const t = d.tasks.find(x => x.id === id);
-      if (t) { Object.assign(t, { text, time, deadline: ed.dead }); clean(t); saveDay(iso, d); }
+      if (t) {
+        const was = !!t.done;
+        Object.assign(t, { text, time, deadline: ed.dead, done: ed.stat === 'done', ...extra });
+        clean(t); saveDay(iso, d);
+        if (was !== t.done && t.idea) setStepDone(t.idea, t.step, t.done, true);
+        if (was !== t.done && t.goal) setGoalStepDone(t.goal, t.gstep, t.done, true);
+      }
     } else {
-      d.tasks.push(clean({ id: newId(), text, time, deadline: ed.dead, done: false }));
+      d.tasks.push(clean({ id: newId(), text, time, deadline: ed.dead, done: ed.stat === 'done', ...extra }));
       saveDay(iso, d);
     }
   } else {
@@ -1501,6 +1866,7 @@ function weekTitle(mon) {
 const bar = (v, goal) => `<div class="bar${v >= goal ? ' full' : ''}"><i style="width:${Math.min(100, goal ? v / goal * 100 : 0)}%"></i></div>`;
 
 function renderHabits() {
+  renderHabitDash();
   const days = weekDays(hab.mon), today = isoDate(new Date());
   const ymWeek = addDays(hab.mon, 3).slice(0, 7);          // месяц недели — по четвергу
   const mIdx = +ymWeek.slice(5) - 1;
@@ -1730,6 +2096,122 @@ function renderSummary() {
 $('#rPrev').addEventListener('click', () => { sumMon = addDays(sumMon, -7); haptic.tap(); renderSummary(); });
 $('#rNext').addEventListener('click', () => { sumMon = addDays(sumMon, 7); haptic.tap(); renderSummary(); });
 $('#hWeek').addEventListener('click', () => { sumMon = hab.mon; openScreen('summary'); });
+
+/* ---------- дашборд привычек (версия 2): месяц открытой недели (по четвергу) ---------- */
+const BAR_COLORS = ['#7fb8d6', '#6fcf97', '#a99be6', '#f2c46d', '#f0a58a', '#6f9ff0', '#cdb08a'];
+function monthIsos(ym) {
+  const [y, m] = ym.split('-').map(Number), n = new Date(y, m, 0).getDate();
+  return Array.from({ length: n }, (_, i) => `${ym}-${pad(i + 1)}`);
+}
+function maxRun(id, isos) { let best = 0, cur = 0; isos.forEach(i => { if (markOf(id, i) > 0) best = Math.max(best, ++cur); else cur = 0; }); return best; }
+function curRun(id) {
+  const today = isoDate(new Date());
+  let d = markOf(id, today) > 0 ? today : addDays(today, -1), n = 0;
+  while (n < 2000 && markOf(id, d) > 0) { n++; d = addDays(d, -1); }
+  return n;
+}
+function habitMonthPct(h, ym, passed, weeks) {      // выполнение цели привычки за месяц, 0–1
+  if (h.per === 'day') return passed.length ? passed.filter(i => markOf(h.id, i) >= h.goal).length / passed.length : 0;
+  if (h.per === 'week') return weeks.length ? weeks.filter(mon => sumDays(h.id, weekDays(mon)) >= h.goal).length / weeks.length : 0;
+  return Math.min(1, monthTotal(h.id, ym) / h.goal);
+}
+function smoothPath(pts, top, bottom) {             // плавная линия через точки (Catmull-Rom → кривые Безье)
+  if (!pts.length) return '';
+  const cl = v => Math.max(top, Math.min(bottom, v)).toFixed(1);
+  let d = `M${pts[0][0]},${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+    d += ` C${(p1[0] + (p2[0] - p0[0]) / 6).toFixed(1)},${cl(p1[1] + (p2[1] - p0[1]) / 6)} ${(p2[0] - (p3[0] - p1[0]) / 6).toFixed(1)},${cl(p2[1] - (p3[1] - p1[1]) / 6)} ${p2[0]},${p2[1]}`;
+  }
+  return d;
+}
+function renderHabitDash() {
+  const today = isoDate(new Date()), ym = addDays(hab.mon, 3).slice(0, 7), [y, m] = ym.split('-').map(Number);
+  const all = monthIsos(ym), passed = all.filter(i => i <= today);
+  const hs = visibleHabits(), ch = hs.filter(h => h.type === 'check'), N = ch.length;
+  const fill = iso => ch.filter(h => markOf(h.id, iso) > 0).length;
+  const filled = passed.reduce((s, i) => s + fill(i), 0);
+  const marks = hs.reduce((s, h) => s + passed.filter(i => markOf(h.id, i) > 0).length, 0);
+  const ref = passed[passed.length - 1];
+  const wk = ref ? weekDays(weekStart(ref)).filter(i => i <= today && i.slice(0, 7) === ym) : [];
+  const wFilled = wk.reduce((s, i) => s + fill(i), 0);
+  const weeks = monthWeeks(y, m - 1).filter(mon => mon <= today);
+  const goalPct = hs.length ? hs.reduce((s, h) => s + habitMonthPct(h, ym, passed, weeks), 0) / hs.length : 0;
+  const mPct = N && passed.length ? filled / (N * passed.length) : 0;
+  const tot = hs.map(h => ({ h, n: passed.filter(i => markOf(h.id, i) > 0).length })).sort((a, b) => b.n - a.n);
+  const runs = hs.map(h => ({ h, n: curRun(h.id) })).sort((a, b) => b.n - a.n);
+  const best = hs.map(h => ({ h, n: maxRun(h.id, passed) })).sort((a, b) => b.n - a.n)[0];
+  const bars = (list, max) => list.map((x, i) => `<div class="hbar"><span title="${esc(x.h.name)}">${esc(x.h.name)}</span><div><i style="width:${Math.max(8, x.n / max * 100)}%;background:${BAR_COLORS[i % BAR_COLORS.length]}">${x.n}</i></div></div>`).join('');
+  const box = (t, num, den, col, note) => `<div class="card dring"><div class="dr-t">${t}</div>${ring(den ? num / den : 0, col, null, 110)}<div class="dr-n">${note || `${num} из ${den}`}</div></div>`;
+
+  // график: % выполненных привычек-галочек по дням
+  const desk = matchMedia('(min-width:900px)').matches;
+  const W = desk ? 640 : 340, H = desk ? 170 : 150, pl = 34, pr = 10, pt = 10, pb = 24, bottom = H - pb;   // на телефоне — свой масштаб, чтобы подписи читались
+  const X = i => +(pl + (all.length > 1 ? i * (W - pl - pr) / (all.length - 1) : 0)).toFixed(1);
+  const Y = v => +(pt + (1 - v) * (H - pt - pb)).toFixed(1);
+  const pts = passed.map((iso, i) => [X(i), Y(N ? fill(iso) / N : 0)]);
+  const line = smoothPath(pts, pt, bottom);
+  const chart = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="Выполнение привычек по дням">`
+    + [0, .5, 1].map(v => `<line x1="${pl}" x2="${W - pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#ece9f5"/><text x="${pl - 6}" y="${Y(v) + 4}" text-anchor="end">${v * 100}%</text>`).join('')
+    + all.map((iso, i) => (i === 0 || (i + 1) % 5 === 0 || i === all.length - 1) ? `<text x="${X(i)}" y="${H - 6}" text-anchor="middle">${i + 1}</text>` : '').join('')
+    + (pts.length > 1 ? `<path d="${line} L${pts[pts.length - 1][0]},${bottom} L${pts[0][0]},${bottom} Z" fill="#a99be6" fill-opacity=".25"/><path d="${line}" fill="none" stroke="#8b7fdc" stroke-width="2.5"/>` : '')
+    + pts.map(p => `<circle cx="${p[0]}" cy="${p[1]}" r="2.5" fill="#8b7fdc"/>`).join('')
+    + '</svg>';
+
+  // таблица месяца — только на ноутбуке (на телефоне те же отметки по неделям ниже)
+  const wno = iso => Math.floor(daysDiff(weekStart(ym + '-01'), weekStart(iso)) / 7) + 1;
+  const groups = [];
+  all.forEach(iso => { const k = wno(iso), g = groups[groups.length - 1]; if (g && g.k === k) g.n++; else groups.push({ k, n: 1 }); });
+  const table = !hs.length ? '' : `<div class="card mtable-wrap"><table class="mtable"><thead>`
+    + `<tr><th class="hn" rowspan="2">${MONTHS[m - 1]}</th>${groups.map(g => `<th class="wkh wk${g.k}" colspan="${g.n}">Неделя ${g.k}</th>`).join('')}<th rowspan="2" class="tot">Итого</th></tr>`
+    + `<tr>${all.map(iso => `<th class="wk${wno(iso)}${iso === today ? ' today' : ''}">${WEEK[wdIdx(iso)].toLowerCase()}<br>${+iso.slice(8)}</th>`).join('')}</tr></thead><tbody>`
+    + hs.map(h => `<tr><th class="hn">${esc(h.name)}</th>` + all.map(iso => {
+        const v = markOf(h.id, iso), fut = iso > today;
+        return `<td class="wk${wno(iso)}"><button class="tc${h.type === 'sum' ? ' sum' : ''}${v ? ' on' : ''}" data-h="${h.id}" data-iso="${iso}"${fut ? ' disabled' : ''} aria-label="${esc(h.name)}, ${+iso.slice(8)}">${h.type === 'sum' ? (v ? short(h, v) : '') : (v ? '✓' : '')}</button></td>`;
+      }).join('') + `<td class="tot">${h.type === 'sum' ? short(h, monthTotal(h.id, ym)) : passed.filter(i => markOf(h.id, i) > 0).length}</td></tr>`).join('')
+    + `</tbody><tfoot>`
+    + `<tr><th>Прогресс %</th>${all.map(iso => `<td>${iso <= today && N ? Math.round(fill(iso) / N * 100) + '%' : ''}</td>`).join('')}<td></td></tr>`
+    + `<tr><th>Заполнено</th>${all.map(iso => `<td>${iso <= today ? fill(iso) : ''}</td>`).join('')}<td></td></tr>`
+    + `<tr><th>Незаполнено</th>${all.map(iso => `<td>${iso <= today ? N - fill(iso) : ''}</td>`).join('')}<td></td></tr>`
+    + `</tfoot></table></div>`;
+
+  $('#hDashTop').innerHTML = `<div class="card dhead"><h2>${MONTHS[m - 1]}</h2><div class="dm">`
+      + `<div><small>Привычек</small><b>${hs.length}</b></div><div><small>Отметок за месяц</small><b>${marks}</b></div><div><small>Прогресс месяца</small><b>${Math.round(mPct * 100)}%</b></div></div></div>`
+    + `<div class="drings">`
+      + box(ref === today ? 'Сегодня' : 'День', ref ? fill(ref) : 0, N, '#4b45b8')
+      + box('Неделя', wFilled, N * wk.length, '#8b7fdc')
+      + box('Месяц', filled, N * passed.length, '#6f9ff0')
+      + box('Цели привычек', Math.round(goalPct * 100), 100, '#6fcf97', 'в среднем по целям')
+    + `</div>${desk ? chartTop() : ''}${table}`;
+  function chartTop() {
+    return `<div class="dash2"><div class="card dcard"><h3>Выполнение по дням</h3>${passed.length ? chart : '<p class="empty-line">Месяц ещё не начался</p>'}</div>`
+      + (hs.length ? `<div class="card dcard"><h3>Топ привычек за месяц</h3>${bars(tot, Math.max(1, tot[0].n))}</div>` : '') + '</div>';
+  }
+
+  // серии и статус (на телефоне сюда же график и топ — под карточками недели)
+  $('#hDashBottom').innerHTML = (desk ? '' : chartTop()) + (!hs.length ? '' :
+    `<div class="card dcard"><h3>Привычки без перерывов</h3>${bars(runs, Math.max(1, runs[0].n))}`
+      + `<p class="best">Самая длинная серия в ${MONTHS_PREP[m - 1]}: <b>${best && best.n ? `${best.n} ${plural(best.n, ['день', 'дня', 'дней'])} — ${esc(best.h.name)}` : 'пока нет'}</b></p></div>`
+    + `<div class="card dcard"><h3>Статус привычек</h3><div class="hstat head"><span>Привычка</span><span>Дни</span><span>Прогресс</span><span>%</span></div>`
+      + hs.map(h => { const n = passed.filter(i => markOf(h.id, i) > 0).length, p = passed.length ? n / passed.length : 0;
+          return `<div class="hstat"><span>${esc(h.name)}</span><span>${n}/${passed.length}</span>${bar(p, 1)}<span>${Math.round(p * 100)}%</span></div>`; }).join('')
+      + `</div>`);
+}
+$('#hDashTop').addEventListener('click', e => {      // клик по клетке таблицы месяца
+  const c = e.target.closest('.tc');
+  if (!c || c.disabled) return;
+  const h = getHabits().find(x => x.id === c.dataset.h), iso = c.dataset.iso;
+  if (!h) return;
+  if (h.type === 'sum') {                            // сумму вводим в карточке недели ниже
+    hab.mon = weekStart(iso); hab.edit = { id: h.id, iso };
+    renderHabits();
+    const card = $(`.hab[data-hid="${h.id}"]`);
+    if (card) card.scrollIntoView({ block: 'center' });
+    return;
+  }
+  markHabit(h, iso, markOf(h.id, iso) ? 0 : 1);
+  renderHabits();
+});
 
 /* «Привычки на сегодня» на странице дня — те же отметки */
 function renderDayHabits() {
