@@ -274,6 +274,14 @@ input[type=date]{
 .legend span{display:inline-flex; align-items:center; gap:5px}
 .off-sq{width:12px; height:12px; border-radius:3px; background:#d6f2e2; box-shadow:inset 0 0 0 1.5px #9fdcbc}
 .dnav{gap:6px}
+.dmarks{display:flex; justify-content:center; gap:8px; margin-top:8px}
+/* КР (контрольная работа): красный день — как дедлайн, но без срока */
+.d.kr{background:#fde0e3; box-shadow:inset 0 0 0 2px #e98a94}
+.d.kr.out{background:transparent; box-shadow:none}
+.d .krm{color:#d4505e; font-size:10px; font-weight:800; letter-spacing:.02em}
+#dKr[aria-pressed=true]{background:#fde0e3; color:#c43d4b}
+.kr-sq{width:12px; height:12px; border-radius:3px; background:#fde0e3; box-shadow:inset 0 0 0 1.5px #e98a94}
+.pl-kr{color:#d4505e; font-size:11px; font-weight:800}
 .grid{gap:3px}
 .d .n{font-weight:500}
 
@@ -586,7 +594,7 @@ select{
       </div>
       <div id="calMonth">
         <div class="grid" id="mGrid"></div>
-        <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span><span><b class="fsum out">−1,1к</b> траты дня</span></p>
+        <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span><span><i class="kr-sq"></i> КР</span><span><b class="fsum out">−1,1к</b> траты дня</span></p>
       </div>
 
       <!-- Месячный планер -->
@@ -626,8 +634,11 @@ select{
     <section class="screen" id="scr-day" hidden>
       <div class="dnav">
         <button class="chip" id="dPrev">‹ Вчера</button>
-        <button class="chip" id="dOff" aria-pressed="false">🌴 Выходной</button>
         <button class="chip" id="dNext">Завтра ›</button>
+      </div>
+      <div class="dmarks">
+        <button class="chip" id="dOff" aria-pressed="false">🌴 Выходной</button>
+        <button class="chip" id="dKr" aria-pressed="false">❗ КР</button>
       </div>
 
       <h2 class="sec-h">Задачи на день</h2>
@@ -1349,8 +1360,9 @@ function getDay(iso) {
 function saveDay(iso, d) {
   delete d._t;
   if (!d.off) delete d.off;
+  if (!d.kr) delete d.kr;
   if (d.fin && !d.fin.length) delete d.fin;
-  const empty = !d.tasks.length && !Object.keys(d.rdone).length && !Object.keys(d.plan).length && !d.diary.trim() && !d.mood && !d.off && !d.fin;
+  const empty = !d.tasks.length && !Object.keys(d.rdone).length && !Object.keys(d.plan).length && !d.diary.trim() && !d.mood && !d.off && !d.kr && !d.fin;
   Store.set(dayKey(iso), empty ? null : d);   // пустой день не занимает ячейку облака
 }
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -1462,7 +1474,7 @@ function renderPlanner() {
     + weekDays(mon).map((iso, i) => {
       const d = getDay(iso), list = dayTasks(iso, d), dt = parseIso(iso);
       const cls = ['pl-day', dt.getMonth() !== m && 'out', iso === today && 'today', d.off && 'dayoff'].filter(Boolean).join(' ');
-      return `<div class="${cls}" style="--wd:${WD_COLORS[i]}"><button class="pl-dh" data-open-day="${iso}"><b>${dt.getDate()}</b><span>${WD_FULL[i]}</span>${d.off ? '🌴' : ''}</button>`
+      return `<div class="${cls}" style="--wd:${WD_COLORS[i]}"><button class="pl-dh" data-open-day="${iso}"><b>${dt.getDate()}</b><span>${WD_FULL[i]}</span>${d.kr ? '<b class="pl-kr">КР</b>' : ''}${d.off ? '🌴' : ''}</button>`
         + list.map(t => `<div class="pl-t${t.done ? ' done' : ''}${t.cancel ? ' cancel' : ''}${t.deadline && !t.done ? ' dl' : ''}" data-iso="${iso}" ${taskAttr(t)}>`
           + `<button class="chk" role="checkbox" aria-checked="${!!t.done}" aria-label="Выполнено">${ICON_CHECK}</button>`
           + `<span class="pl-tx">${t.prio ? PRIO[t.prio][0] + ' ' : ''}${t.time ? t.time + ' ' : ''}${esc(t.text)}</span></div>`).join('')
@@ -1564,10 +1576,11 @@ function renderMonthGrid() {
     const fo = ((d && d.fin) || []).filter(e => e.g !== 'inc').reduce((s, e) => s + e.sum, 0);
     const fi = ((d && d.fin) || []).filter(e => e.g === 'inc').reduce((s, e) => s + e.sum, 0);
     const fsum = fo ? `<span class="fsum out">−${kRub(fo)}</span>` : fi ? `<span class="fsum in">+${kRub(fi)}</span>` : '';
-    const cls = ['d', dt.getMonth() !== m && 'out', iso === today && 'today', i % 7 > 4 && 'we', 'r' + (Math.floor(i / 7) + 1), off && 'dayoff'].filter(Boolean).join(' ');
-    html += `<button class="${cls}" data-iso="${iso}" aria-label="${dt.getDate()} ${MONTHS_GEN[dt.getMonth()]}${off ? ', выходной' : ''}${dl ? ', дедлайн' : ''}">`
+    const kr = d && d.kr;
+    const cls = ['d', dt.getMonth() !== m && 'out', iso === today && 'today', i % 7 > 4 && 'we', 'r' + (Math.floor(i / 7) + 1), off && 'dayoff', kr && 'kr'].filter(Boolean).join(' ');
+    html += `<button class="${cls}" data-iso="${iso}" aria-label="${dt.getDate()} ${MONTHS_GEN[dt.getMonth()]}${off ? ', выходной' : ''}${kr ? ', контрольная работа' : ''}${dl ? ', дедлайн' : ''}">`
       + `<span class="n">${dt.getDate()}</span>`
-      + `<span class="marks">${off ? '🌴' : ''}${busy ? '<i class="dot"></i>' : ''}${dl ? '<i class="dot red"></i>' : ''}${mood}</span>${fsum}</button>`;
+      + `<span class="marks">${kr ? '<b class="krm">КР</b>' : ''}${off ? '🌴' : ''}${busy ? '<i class="dot"></i>' : ''}${dl ? '<i class="dot red"></i>' : ''}${mood}</span>${fsum}</button>`;
   }
   $('#mGrid').innerHTML = html;
 }
@@ -1609,6 +1622,14 @@ $('#dOff').addEventListener('click', () => {                 // выходной
   toast(d.off ? '🌴 День отмечен как выходной' : 'Отметка «выходной» снята');
   render();
 });
+$('#dKr').addEventListener('click', () => {                  // контрольная работа: красный день без срока
+  const d = getDay(nav.day);
+  d.kr = !d.kr;
+  saveDay(nav.day, d);
+  haptic.tap();
+  toast(d.kr ? '❗ В этот день КР — день отмечен красным' : 'Отметка «КР» снята');
+  render();
+});
 $('#dNext').addEventListener('click', () => shiftDay(1));
 
 function slotTimes() {
@@ -1626,7 +1647,8 @@ const taskAttr = t => t.rec ? `data-rid="${t.id}"` : `data-id="${t.id}"`;
 function renderDay() {
   const iso = nav.day, d = getDay(iso), list = dayTasks(iso, d);
   $('#dOff').setAttribute('aria-pressed', !!d.off);
-  $('#title').textContent = dayTitle(iso) + (d.off ? ' 🌴' : '');
+  $('#dKr').setAttribute('aria-pressed', !!d.kr);
+  $('#title').textContent = dayTitle(iso) + (d.off ? ' 🌴' : '') + (d.kr ? ' ❗КР' : '');
 
   $('#dTasks').innerHTML = list.length
     ? list.map(t => {
@@ -2813,15 +2835,32 @@ const FGROUPS = { pay: 'Платежи', exp: 'Расходы', debt: 'Долг�
 const FCOLOR = { pay: '#f8d3c6', exp: '#f9dbe5', debt: '#fbecc4', inc: '#d3efdc', sav: '#dbe7ee' };
 const FDEFAULT = {
   pay: ['Жильё', 'Связь и интернет', 'Страхование', 'Абонементы', 'Подписки'],
-  exp: ['Продукты', 'Семейные расходы', 'Личные расходы', 'Транспорт'],
+  exp: ['Продукты', 'Семейные расходы', 'Личные расходы', 'Транспорт', 'Инвестиции'],
   debt: ['Кредиты', 'Долги', 'Кредитные карты', 'Ипотека'],
-  inc: ['Зарплата', 'Фриланс', 'Бизнес'],
+  inc: ['Зарплата', 'Фриланс', 'Бизнес', 'Подарок', 'Родители', 'Продажа на Авито'],
   sav: ['Подушка безопасности', 'Вклады', 'Дивиденды', 'Криптовалюта'],
 };
 const PIE_COLORS = ['#f0a58a', '#7fb8d6', '#6fcf97', '#f2c46d', '#a99be6', '#f7a8c0', '#6f9ff0', '#cdb08a', '#9fdcbc', '#e88b8b'];
 const SPEND = ['pay', 'exp', 'debt'];
-function getFinCats() { const f = Store.get('fin'); return JSON.parse(JSON.stringify((f && f.cats) || FDEFAULT)); }
-function saveFinCats(cats) { Store.set('fin', { cats }); }
+const FIN_V = 2;                                   // v2 (11.11): + Инвестиции в расходах; + Подарок, Родители, Продажа на Авито в поступлениях
+function getFinCats() {
+  const f = Store.get('fin'), cats = JSON.parse(JSON.stringify((f && f.cats) || FDEFAULT));
+  if (f && (f.v || 1) < FIN_V) {                   // статьи, сохранённые раньше, — дополняем новыми один раз
+    [['exp', 'Инвестиции'], ['inc', 'Подарок'], ['inc', 'Родители'], ['inc', 'Продажа на Авито']]
+      .forEach(([g, c]) => { if (!cats[g].includes(c)) cats[g].push(c); });
+  }
+  return cats;
+}
+function saveFinCats(cats) { Store.set('fin', { cats, v: FIN_V }); }
+/* трата «Инвестиции» сама попадает в привычку-сумму «Инвестиции» (цель «… ₽ в месяц») */
+function investHabit() { return getHabits().find(h => h.type === 'sum' && (h.id === 'invest' || /инвест/i.test(h.name))); }
+function syncInvest(e, iso, sign) {
+  if (e.g !== 'exp' || e.cat !== 'Инвестиции') return;
+  const h = investHabit();
+  if (!h) return;
+  const v = Math.max(0, Math.round(markOf(h.id, iso) + sign * e.sum));
+  if (sign > 0) markHabit(h, iso, v); else setMark(h.id, iso, v);
+}
 function getFm(ym) { const o = JSON.parse(JSON.stringify(Store.get('fm_' + ym) || {})); delete o._t; return { plan: {}, sav: {}, ...o }; }
 function saveFm(ym, o) {
   const has = Object.values(o.plan).some(g => Object.values(g).some(Boolean)) || Object.values(o.sav).some(Boolean);
@@ -2874,14 +2913,17 @@ function addFinEntry(iso, val, sum, note) {
   const [g, ...rest] = val.split('|'), cat = rest.join('|');
   const d = getDay(iso);
   d.fin = d.fin || [];
-  d.fin.push(note ? { id: newId(), g, cat, sum, note } : { id: newId(), g, cat, sum });
+  const e = note ? { id: newId(), g, cat, sum, note } : { id: newId(), g, cat, sum };
+  d.fin.push(e);
   saveDay(iso, d);
   haptic.ok();
+  syncInvest(e, iso, 1);
 }
 function delFinEntry(iso, id) {
-  const d = getDay(iso);
-  d.fin = (d.fin || []).filter(e => e.id !== id);
+  const d = getDay(iso), e = (d.fin || []).find(x => x.id === id);
+  d.fin = (d.fin || []).filter(x => x.id !== id);
   saveDay(iso, d);
+  if (e) syncInvest(e, iso, -1);
 }
 const entryRow = (e, withDate) => `<div class="fentry"><span>${withDate ? `<span class="meta">${dayTitle(e.iso).toLowerCase()} · </span>` : ''}${esc(e.cat)}</span>`
   + `<span class="fe-sum ${e.g === 'inc' ? 'in' : 'out'}">${e.g === 'inc' ? '+' : '−'}${rub(e.sum)}</span>`
