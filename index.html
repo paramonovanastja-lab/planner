@@ -458,6 +458,53 @@ input[type=date]{
 .mtable tfoot th{text-align:left; padding-left:8px}
 .mtable .tot{min-width:52px; color:var(--btn); font-weight:700}
 
+/* ===== V2 этап 3: финансы ===== */
+.fin-grid{display:grid; gap:10px; margin-top:10px}
+.fhead{background:linear-gradient(120deg, #fdf3dd, #fdeae2)}
+.fhead h2{margin:0 0 10px; color:#bb5c3b; font-size:26px; letter-spacing:.02em}
+.ftiles{display:grid; grid-template-columns:repeat(2, 1fr); gap:8px}
+.ftile{padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.75)}
+.ftile small{display:block; color:var(--hint); font-size:12px}
+.ftile b{font-size:18px; font-variant-numeric:tabular-nums}
+.fspent{margin-top:12px; font-size:14px}
+.fspent .bar i{background:#f0a58a}
+.fcard h3{margin:-14px -16px 10px; padding:10px 16px; border-radius:16px 16px 0 0; background:var(--fc, #efecfb); color:var(--text); font-size:15px; font-weight:700; text-align:center; letter-spacing:.03em; text-transform:uppercase}
+.ftab{width:100%; border-collapse:collapse; font-size:14px; font-variant-numeric:tabular-nums}
+.ftab th{padding:4px 2px; color:var(--hint); font-size:12px; font-weight:600; text-align:right}
+.ftab th:first-child, .ftab td:first-child{text-align:left}
+.ftab td{padding:5px 2px 5px 10px; border-bottom:1px solid var(--sep); text-align:right; white-space:nowrap}
+.ftab td:first-child{padding-right:8px; white-space:normal; word-break:break-word}
+.ftab tr.ftot td{border-bottom:0; border-top:2px solid var(--sep); font-weight:700}
+.ftab td.act{width:26px; padding:0}
+.fin-in{width:100%; max-width:110px; padding:5px 8px; border:0; border-radius:8px; background:var(--bg2); color:var(--text); font:inherit; font-size:16px; text-align:right; -webkit-appearance:none; appearance:none}
+.fdel{width:24px; height:28px; color:var(--hint); font-size:18px}
+.fadd{display:flex; gap:6px; margin-top:8px}
+.fadd input{padding:8px 10px; font-size:16px}
+.fadd button{flex:none; width:40px; border-radius:10px; background:var(--bg2); color:var(--link); font-size:20px}
+.flegend{margin-top:6px; font-size:13px}
+.flegend div{display:grid; grid-template-columns:12px 1fr auto auto; align-items:center; gap:6px; padding:3px 0}
+.flegend i{width:10px; height:10px; border-radius:50%}
+.flegend b{font-weight:600}
+.flegend span:last-child{min-width:40px; color:var(--hint); text-align:right}
+.pie{display:block; width:150px; height:150px; margin:0 auto}
+.fform{display:grid; gap:8px}
+.fform .seg button{padding:9px 4px}
+.fform select, .fform input[type=date]{width:100%; text-align:left}
+.frow2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.fentry{display:grid; grid-template-columns:1fr auto 24px; gap:2px 10px; align-items:center; padding:8px 0; border-bottom:1px solid var(--sep); font-size:14px}
+.fentry:last-child{border-bottom:0}
+.fentry small{grid-column:1 / 3; color:var(--hint); font-size:12px; word-break:break-word}
+.fe-sum{font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap}
+.fe-sum.out, .fsum.out{color:#c0603f}
+.fe-sum.in, .fsum.in{color:#2d8f5c}
+.d .fsum{font-size:10px; line-height:1.1; font-weight:700; white-space:nowrap}
+@media (min-width:900px){
+  .ftiles{grid-template-columns:repeat(4, 1fr)}
+  .fin-grid.c3{grid-template-columns:1.4fr 1fr 1fr 1fr}
+  .fin-grid.c5{grid-template-columns:repeat(5, 1fr)}
+  .fin-grid.c2{grid-template-columns:1fr 1fr 1fr}
+}
+
 /* ===== Этап 7: помодоро и настройки ===== */
 .pomo-btn{width:auto; min-width:40px; padding:0 8px; gap:4px; display:flex}
 .pomo-btn span{font-size:14px; font-weight:600; color:var(--danger); font-variant-numeric:tabular-nums}
@@ -539,7 +586,7 @@ select{
       </div>
       <div id="calMonth">
         <div class="grid" id="mGrid"></div>
-        <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span></p>
+        <p class="legend"><span><i class="dot"></i> дела</span><span><i class="dot red"></i> дедлайн</span><span><i class="off-sq"></i> 🌴 выходной</span><span><b class="fsum out">−1,1к</b> траты дня</span></p>
       </div>
 
       <!-- Месячный планер -->
@@ -598,6 +645,9 @@ select{
 
       <h2 class="sec-h">Расписание</h2>
       <div class="card" id="dSlots"></div>
+
+      <h2 class="sec-h">Финансы дня</h2>
+      <div class="card" id="dFin"></div>
 
       <h2 class="sec-h">Дневник</h2>
       <div class="card">
@@ -682,6 +732,17 @@ select{
         <button class="btn" id="gAdd" style="flex:none; width:auto; padding:10px 18px">+ Цель</button>
       </div>
       <div class="gwrap" id="gList"></div>
+    </section>
+
+    <!-- Вкладка «Финансы» -->
+    <section class="screen" id="scr-fin" hidden>
+      <div class="mbar">
+        <button class="icon-btn" id="fPrev" aria-label="Предыдущий месяц"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <h2 id="fTitle">месяц</h2>
+        <button class="icon-btn" id="fNext" aria-label="Следующий месяц"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg></button>
+        <button class="chip" id="fNow">Сейчас</button>
+      </div>
+      <div id="fBox"></div>
     </section>
 
     <!-- Цель: правка -->
@@ -886,7 +947,7 @@ select{
         <p class="hint">Копия — это все задачи, привычки, идеи и дневник одним файлом. Удобно хранить её в «Избранном» Telegram.</p>
       </div>
 
-      <p class="hint center">Версия 2 · этап 2: дашборд и задачи</p>
+      <p class="hint center">Версия 2.0 · пастель, цели, дашборд, финансы</p>
     </section>
   </main>
 </div>
@@ -904,6 +965,10 @@ select{
     <button class="tab" data-tab="goals" role="tab">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.2" fill="currentColor"/></svg>
       Цели
+    </button>
+    <button class="tab" data-tab="fin" role="tab">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="6" width="19" height="14" rx="3"/><path d="M2.5 10h19M16.5 15h2M6 6l9-3.5 2 3.5"/></svg>
+      Финансы
     </button>
     <button class="tab" data-tab="ideas" role="tab">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21.5h4M12 2.5a6.5 6.5 0 0 0-3.8 11.8c.5.4.8 1 .8 1.6V16h6v-.1c0-.6.3-1.2.8-1.6A6.5 6.5 0 0 0 12 2.5z"/></svg>
@@ -1216,8 +1281,8 @@ const Store = (() => {
 })();
 
 /* ================= Навигация ================= */
-const TABS = { calendar: 'Календарь', habits: 'Дела', goals: 'Цели', ideas: 'Идеи' };
-const WIDE = new Set(['goals', 'habits']);                  // экраны, которым на ноутбуке нужна вся ширина
+const TABS = { calendar: 'Календарь', habits: 'Дела', goals: 'Цели', fin: 'Финансы', ideas: 'Идеи' };
+const WIDE = new Set(['goals', 'habits', 'fin']);                  // экраны, которым на ноутбуке нужна вся ширина
 const SCREENS = { settings: 'Настройки', day: 'День', task: 'Задача', search: 'Поиск по дневнику', habit: 'Привычка', stats: 'Статистика', summary: 'Итоги недели', idea: 'Идея', plan: 'План по дням', pomo: 'Концентрация', goal: 'Цель' };
 const nav = { tab: 'calendar', stack: [], day: isoDate(new Date()) };
 try { const t = localStorage.getItem('pl~tab'); if (TABS[t]) nav.tab = t; } catch (e) {}
@@ -1250,6 +1315,7 @@ function render() {
   if (screen === 'plan') renderPlan();
   if (screen === 'goals') renderGoals();
   if (screen === 'goal') renderGoalEd();
+  if (screen === 'fin') renderFinance();
   $('.app').classList.toggle('wide', WIDE.has(screen) || (screen === 'calendar' && cal.view !== 'month'));
   if (screen === 'settings') renderSettings();
 }
@@ -1283,7 +1349,8 @@ function getDay(iso) {
 function saveDay(iso, d) {
   delete d._t;
   if (!d.off) delete d.off;
-  const empty = !d.tasks.length && !Object.keys(d.rdone).length && !Object.keys(d.plan).length && !d.diary.trim() && !d.mood && !d.off;
+  if (d.fin && !d.fin.length) delete d.fin;
+  const empty = !d.tasks.length && !Object.keys(d.rdone).length && !Object.keys(d.plan).length && !d.diary.trim() && !d.mood && !d.off && !d.fin;
   Store.set(dayKey(iso), empty ? null : d);   // пустой день не занимает ячейку облака
 }
 const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -1494,10 +1561,13 @@ function renderMonthGrid() {
     const dl = d && d.tasks && d.tasks.some(t => t.deadline && !t.done);
     const mood = d && d.mood ? MOODS[d.mood - 1] : '';
     const off = d && d.off;
+    const fo = ((d && d.fin) || []).filter(e => e.g !== 'inc').reduce((s, e) => s + e.sum, 0);
+    const fi = ((d && d.fin) || []).filter(e => e.g === 'inc').reduce((s, e) => s + e.sum, 0);
+    const fsum = fo ? `<span class="fsum out">−${kRub(fo)}</span>` : fi ? `<span class="fsum in">+${kRub(fi)}</span>` : '';
     const cls = ['d', dt.getMonth() !== m && 'out', iso === today && 'today', i % 7 > 4 && 'we', 'r' + (Math.floor(i / 7) + 1), off && 'dayoff'].filter(Boolean).join(' ');
     html += `<button class="${cls}" data-iso="${iso}" aria-label="${dt.getDate()} ${MONTHS_GEN[dt.getMonth()]}${off ? ', выходной' : ''}${dl ? ', дедлайн' : ''}">`
       + `<span class="n">${dt.getDate()}</span>`
-      + `<span class="marks">${off ? '🌴' : ''}${busy ? '<i class="dot"></i>' : ''}${dl ? '<i class="dot red"></i>' : ''}${mood}</span></button>`;
+      + `<span class="marks">${off ? '🌴' : ''}${busy ? '<i class="dot"></i>' : ''}${dl ? '<i class="dot red"></i>' : ''}${mood}</span>${fsum}</button>`;
   }
   $('#mGrid').innerHTML = html;
 }
@@ -1595,6 +1665,7 @@ function renderDay() {
   const diary = $('#dDiary');
   if (document.activeElement !== diary) diary.value = d.diary;
   renderDayHabits();
+  if (!$('#dFin').contains(document.activeElement)) renderDayFin();
 }
 
 /* поле правки прямо на месте: Enter или уход из поля — сохранить, Esc — отменить */
@@ -2734,6 +2805,225 @@ $('#gDel').addEventListener('click', async () => {
   back();
 });
 
+/* ================= Финансы =================
+   fin = { cats:{ pay:[…], exp:[…], debt:[…], inc:[…], sav:[…] } } — статьи (общие для всех месяцев)
+   fm_YYYY-MM = { plan:{ pay:{статья:сумма}, exp, debt, inc }, sav:{статья:сумма} } — план месяца и накопления
+   Ежедневные записи — в дне: day.fin = [{id, g:'pay'|'exp'|'debt'|'inc', cat, sum, note?}]; факт месяца считается из них. */
+const FGROUPS = { pay: 'Платежи', exp: 'Расходы', debt: 'Долги', inc: 'Поступления', sav: 'Накопления' };
+const FCOLOR = { pay: '#f8d3c6', exp: '#f9dbe5', debt: '#fbecc4', inc: '#d3efdc', sav: '#dbe7ee' };
+const FDEFAULT = {
+  pay: ['Жильё', 'Связь и интернет', 'Страхование', 'Абонементы', 'Подписки'],
+  exp: ['Продукты', 'Семейные расходы', 'Личные расходы', 'Транспорт'],
+  debt: ['Кредиты', 'Долги', 'Кредитные карты', 'Ипотека'],
+  inc: ['Зарплата', 'Фриланс', 'Бизнес'],
+  sav: ['Подушка безопасности', 'Вклады', 'Дивиденды', 'Криптовалюта'],
+};
+const PIE_COLORS = ['#f0a58a', '#7fb8d6', '#6fcf97', '#f2c46d', '#a99be6', '#f7a8c0', '#6f9ff0', '#cdb08a', '#9fdcbc', '#e88b8b'];
+const SPEND = ['pay', 'exp', 'debt'];
+function getFinCats() { const f = Store.get('fin'); return JSON.parse(JSON.stringify((f && f.cats) || FDEFAULT)); }
+function saveFinCats(cats) { Store.set('fin', { cats }); }
+function getFm(ym) { const o = JSON.parse(JSON.stringify(Store.get('fm_' + ym) || {})); delete o._t; return { plan: {}, sav: {}, ...o }; }
+function saveFm(ym, o) {
+  const has = Object.values(o.plan).some(g => Object.values(g).some(Boolean)) || Object.values(o.sav).some(Boolean);
+  Store.set('fm_' + ym, has ? o : null);
+}
+function monthEntries(ym) {                       // все ежедневные записи месяца (из дней календаря)
+  const out = [];
+  Store.keys('day_' + ym).forEach(k => { const d = Store.get(k); ((d && d.fin) || []).forEach(e => out.push({ ...e, iso: k.slice(4) })); });
+  return out.sort((a, b) => a.iso.localeCompare(b.iso));
+}
+function monthFacts(ym) {
+  const f = { pay: {}, exp: {}, debt: {}, inc: {} }, tot = { pay: 0, exp: 0, debt: 0, inc: 0 };
+  monthEntries(ym).forEach(e => { if (!f[e.g]) return; f[e.g][e.cat] = (f[e.g][e.cat] || 0) + e.sum; tot[e.g] += e.sum; });
+  return { f, tot };
+}
+const sumObj = o => Object.values(o || {}).reduce((s, v) => s + (+v || 0), 0);
+const kRub = n => n >= 1e6 ? (Math.round(n / 1e5) / 10).toString().replace('.', ',') + 'м' : n >= 1000 ? (Math.round(n / 100) / 10).toString().replace('.', ',') + 'к' : String(Math.round(n));
+/* круговая диаграмма-«бублик» с подписями */
+function pie(slices) {
+  const total = slices.reduce((s, x) => s + x.v, 0), r = 46, len = 2 * Math.PI * r;
+  let acc = 0;
+  const arcs = total ? slices.filter(x => x.v > 0).map(x => {
+    const p = x.v / total, c = `<circle cx="60" cy="60" r="${r}" fill="none" stroke="${x.color}" stroke-width="26" stroke-dasharray="${(len * p).toFixed(2)} ${len.toFixed(2)}" stroke-dashoffset="${(-len * acc).toFixed(2)}" transform="rotate(-90 60 60)"/>`;
+    acc += p; return c;
+  }).join('') : '';
+  return `<svg class="pie" viewBox="0 0 120 120" role="img" aria-label="${slices.map(x => `${x.label}: ${total ? Math.round(x.v / total * 100) : 0}%`).join(', ')}">`
+    + `<circle cx="60" cy="60" r="${r}" fill="none" stroke="#efedf5" stroke-width="26"/>${arcs}</svg>`
+    + `<div class="flegend">${slices.filter(x => x.v > 0).map(x => `<div><i style="background:${x.color}"></i><span>${esc(x.label)}</span><b>${rub(x.v)}</b><span>${Math.round(x.v / total * 100)}%</span></div>`).join('') || '<p class="empty-line">Пока нет данных</p>'}</div>`;
+}
+/* столбики «план / факт» */
+function planFactChart(rows) {
+  const W = 320, H = 170, pb = 26, pt = 14, max = Math.max(1, ...rows.flatMap(r => [r.plan, r.fact]));
+  const gw = (W - 10) / rows.length, bw = Math.min(26, gw / 3);
+  return `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" role="img" aria-label="План и факт по группам">`
+    + rows.map((r, i) => {
+      const x = 5 + i * gw + gw / 2, hp = (H - pb - pt) * r.plan / max, hf = (H - pb - pt) * r.fact / max;
+      return `<rect x="${x - bw - 2}" y="${H - pb - hp}" width="${bw}" height="${hp}" rx="4" fill="${r.color}" opacity=".45"/>`
+        + `<rect x="${x + 2}" y="${H - pb - hf}" width="${bw}" height="${hf}" rx="4" fill="${r.color}"/>`
+        + (r.fact ? `<text x="${x + 2 + bw / 2}" y="${H - pb - hf - 3}" text-anchor="middle">${kRub(r.fact)}</text>` : '')
+        + `<text x="${x}" y="${H - 8}" text-anchor="middle">${r.label}</text>`;
+    }).join('') + `</svg><div class="flegend" style="display:flex;gap:14px;justify-content:center"><span>▮ светлее — план</span><span>▮ ярче — факт</span></div>`;
+}
+
+const fForm = { kind: 'out', date: '', sel: '' };   // форма «добавить запись» во вкладке
+function finOptions(kind, cats, sel) {
+  const groups = kind === 'in' ? ['inc'] : SPEND;
+  return groups.map(g => `<optgroup label="${FGROUPS[g]}">${cats[g].map(c => { const v = `${g}|${c}`; return `<option value="${esc(v)}"${v === sel ? ' selected' : ''}>${esc(c)}</option>`; }).join('')}</optgroup>`).join('');
+}
+function addFinEntry(iso, val, sum, note) {
+  const [g, ...rest] = val.split('|'), cat = rest.join('|');
+  const d = getDay(iso);
+  d.fin = d.fin || [];
+  d.fin.push(note ? { id: newId(), g, cat, sum, note } : { id: newId(), g, cat, sum });
+  saveDay(iso, d);
+  haptic.ok();
+}
+function delFinEntry(iso, id) {
+  const d = getDay(iso);
+  d.fin = (d.fin || []).filter(e => e.id !== id);
+  saveDay(iso, d);
+}
+const entryRow = (e, withDate) => `<div class="fentry"><span>${withDate ? `<span class="meta">${dayTitle(e.iso).toLowerCase()} · </span>` : ''}${esc(e.cat)}</span>`
+  + `<span class="fe-sum ${e.g === 'inc' ? 'in' : 'out'}">${e.g === 'inc' ? '+' : '−'}${rub(e.sum)}</span>`
+  + `<button class="fdel" data-del-fin="${e.id}" data-iso="${e.iso}" aria-label="Удалить запись">×</button>`
+  + (e.note ? `<small>📝 ${esc(e.note)}</small>` : '') + '</div>';
+
+function renderFinance() {
+  const { y, m } = cal, ym = `${y}-${pad(m + 1)}`, today = isoDate(new Date());
+  $('#fTitle').textContent = `${MONTHS[m]} ${y}`;
+  const cats = getFinCats(), fm = getFm(ym), { f, tot } = monthFacts(ym);
+  const plan = g => sumObj(fm.plan[g]);
+  const spent = tot.pay + tot.exp + tot.debt, income = tot.inc, savings = sumObj(fm.sav);
+  const rest = income - spent, pct = income ? spent / income : 0;
+  if (!fForm.date || fForm.date.slice(0, 7) !== ym) fForm.date = today.slice(0, 7) === ym ? today : ym + '-01';
+  const entries = monthEntries(ym);
+
+  const head = `<div class="card fhead"><h2>${MONTHS[m].toUpperCase()}</h2><div class="ftiles">`
+    + `<div class="ftile"><small>Поступления</small><b>${rub(income)}</b></div>`
+    + `<div class="ftile"><small>Траты</small><b>${rub(spent)}</b></div>`
+    + `<div class="ftile"><small>Остаток на конец месяца</small><b style="color:${rest < 0 ? '#c0603f' : 'inherit'}">${rub(rest)}</b></div>`
+    + `<div class="ftile"><small>Накопления</small><b>${rub(savings)}</b></div></div>`
+    + `<div class="fspent">Потрачено от поступлений: <b>${income ? Math.round(pct * 100) + '%' : '—'}</b>${bar(Math.min(pct, 1), 1)}</div></div>`;
+
+  const pf = [['inc', 'Поступления'], ['pay', 'Платежи'], ['exp', 'Расходы'], ['debt', 'Долги']];
+  const overview = `<div class="card fcard" style="--fc:#efecfb"><h3>Поступления и расходы</h3><table class="ftab"><tr><th>Название</th><th>План</th><th>Факт</th></tr>`
+    + pf.map(([g, n]) => `<tr><td>${n}</td><td>${rub(plan(g))}</td><td>${rub(tot[g])}</td></tr>`).join('')
+    + `<tr class="ftot"><td>Остаток</td><td>${rub(plan('inc') - plan('pay') - plan('exp') - plan('debt'))}</td><td>${rub(rest)}</td></tr>`
+    + `<tr><td>Капитал и накопления</td><td></td><td>${rub(savings)}</td></tr></table></div>`;
+  const chartPF = `<div class="card fcard" style="--fc:#e6f2f8"><h3>План / факт</h3>${planFactChart(pf.map(([g, n]) => ({ label: n, plan: plan(g), fact: tot[g], color: { inc: '#6fcf97', pay: '#f0a58a', exp: '#f7a8c0', debt: '#f2c46d' }[g] })))}</div>`;
+  const pieShare = `<div class="card fcard" style="--fc:#fdeae2"><h3>Доля поступлений и трат</h3>${pie([
+    { label: 'Платежи', v: tot.pay, color: '#f0a58a' }, { label: 'Расходы', v: tot.exp, color: '#f7a8c0' },
+    { label: 'Долги', v: tot.debt, color: '#f2c46d' }, { label: 'Остаток', v: Math.max(0, rest), color: '#9fdcbc' }])}</div>`;
+  const byCat = [];
+  SPEND.forEach(g => Object.entries(f[g]).forEach(([c, v]) => { const ex = byCat.find(x => x.label === c); if (ex) ex.v += v; else byCat.push({ label: c, v }); }));
+  byCat.sort((a, b) => b.v - a.v).forEach((x, i) => { x.color = PIE_COLORS[i % PIE_COLORS.length]; });
+  const pieCats = `<div class="card fcard" style="--fc:#fdf3dd"><h3>Доля трат по категориям</h3>${pie(byCat)}</div>`;
+
+  const section = g => {
+    const isSav = g === 'sav';
+    const rows = cats[g].map(c => `<tr><td>${esc(c)}</td>`
+      + (isSav ? '' : `<td><input class="fin-in" type="number" inputmode="numeric" min="0" data-plan="${g}" data-cat="${esc(c)}" value="${(fm.plan[g] || {})[c] || ''}" placeholder="0" aria-label="План: ${esc(c)}"></td>`)
+      + (isSav ? `<td><input class="fin-in" type="number" inputmode="numeric" min="0" data-sav="${esc(c)}" value="${fm.sav[c] || ''}" placeholder="0" aria-label="Накопления: ${esc(c)}"></td>` : `<td>${rub(f[g][c] || 0)}</td>`)
+      + `<td class="act"><button class="fdel" data-del-cat="${g}" data-cat="${esc(c)}" aria-label="Убрать статью ${esc(c)}">×</button></td></tr>`).join('');
+    const totals = isSav ? `<tr class="ftot"><td>Итог</td><td>${rub(savings)}</td><td></td></tr>`
+      : `<tr class="ftot"><td>Итог</td><td>${rub(plan(g))}</td><td>${rub(tot[g])}</td><td></td></tr>`;
+    return `<div class="card fcard" style="--fc:${FCOLOR[g]}"><h3>${FGROUPS[g]}</h3><table class="ftab"><tr><th>Статья</th>${isSav ? '<th>Сумма</th>' : '<th>План</th><th>Факт</th>'}<th></th></tr>${rows}${totals}</table>`
+      + `<div class="fadd"><input type="text" data-newcat="${g}" placeholder="Новая статья" spellcheck="false" autocorrect="off"><button data-addcat="${g}" aria-label="Добавить статью">+</button></div></div>`;
+  };
+
+  const form = `<div class="card fcard" style="--fc:#efecfb"><h3>Добавить запись</h3><div class="fform">`
+    + `<div class="seg"><button data-fkind="out" class="${fForm.kind === 'out' ? 'on' : ''}">− Трата</button><button data-fkind="in" class="${fForm.kind === 'in' ? 'on' : ''}">+ Поступление</button></div>`
+    + `<div class="frow2"><input type="date" id="fDate" value="${fForm.date}" aria-label="Дата"><input type="number" id="fSum" class="fin-in" style="max-width:none" inputmode="decimal" min="0" placeholder="Сумма, ₽" aria-label="Сумма"></div>`
+    + `<select id="fCat" aria-label="Статья">${finOptions(fForm.kind, cats, fForm.sel)}</select>`
+    + `<input type="text" id="fNote" placeholder="Примечание (по желанию)" spellcheck="false" autocorrect="off">`
+    + `<button class="btn" id="fAddBtn">Добавить</button></div></div>`;
+  const outs = entries.filter(e => e.g !== 'inc'), ins = entries.filter(e => e.g === 'inc');
+  const daily = `<div class="card fcard" style="--fc:#f9dbe5"><h3>Ежедневные траты</h3>${outs.length ? outs.map(e => entryRow(e, true)).join('') : '<p class="empty-line">Пока нет записей</p>'}</div>`
+    + `<div class="card fcard" style="--fc:#d3efdc"><h3>Ежедневные поступления</h3>${ins.length ? ins.map(e => entryRow(e, true)).join('') : '<p class="empty-line">Пока нет записей</p>'}</div>`;
+
+  $('#fBox').innerHTML = head
+    + `<div class="fin-grid c3">${overview}${chartPF}${pieShare}${pieCats}</div>`
+    + `<div class="fin-grid c2">${form}${daily}</div>`
+    + `<div class="fin-grid c5">${['pay', 'exp', 'debt', 'inc', 'sav'].map(section).join('')}</div>`
+    + `<p class="hint center">Факт считается из ежедневных записей — их можно добавлять и здесь, и на странице дня в календаре.</p>`;
+}
+function finShift(n) { const d = new Date(cal.y, cal.m + n, 1); cal.y = d.getFullYear(); cal.m = d.getMonth(); haptic.tap(); renderFinance(); }
+$('#fPrev').addEventListener('click', () => finShift(-1));
+$('#fNext').addEventListener('click', () => finShift(1));
+$('#fNow').addEventListener('click', () => { const t = new Date(); cal.y = t.getFullYear(); cal.m = t.getMonth(); renderFinance(); });
+$('#fBox').addEventListener('change', e => {
+  const ym = `${cal.y}-${pad(cal.m + 1)}`, t = e.target;
+  if (t.dataset.plan || t.dataset.sav) {            // план статьи или сумма накоплений
+    const fm = getFm(ym), v = Math.max(0, Math.round(+t.value || 0));
+    if (t.dataset.plan) { fm.plan[t.dataset.plan] = fm.plan[t.dataset.plan] || {}; if (v) fm.plan[t.dataset.plan][t.dataset.cat] = v; else delete fm.plan[t.dataset.plan][t.dataset.cat]; }
+    else { if (v) fm.sav[t.dataset.sav] = v; else delete fm.sav[t.dataset.sav]; }
+    saveFm(ym, fm);
+    t.blur(); renderFinance();
+  }
+  if (t.id === 'fDate') fForm.date = t.value;
+  if (t.id === 'fCat') fForm.sel = t.value;
+});
+$('#fBox').addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.matches('.fin-in[data-plan], .fin-in[data-sav]')) e.target.blur();
+  if (e.target.dataset.newcat) { e.preventDefault(); $(`[data-addcat="${e.target.dataset.newcat}"]`).click(); }
+  if (e.target.id === 'fSum' || e.target.id === 'fNote') { e.preventDefault(); $('#fAddBtn').click(); }
+});
+$('#fBox').addEventListener('click', async e => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.dataset.fkind) { fForm.kind = t.dataset.fkind; fForm.sel = ''; haptic.tap(); renderFinance(); return; }
+  if (t.id === 'fAddBtn') {
+    const sum = Math.round((+$('#fSum').value || 0) * 100) / 100, date = $('#fDate').value;
+    if (!(sum > 0)) { toast('Введите сумму'); $('#fSum').focus(); return; }
+    if (!date) { toast('Выберите дату'); return; }
+    addFinEntry(date, $('#fCat').value, sum, $('#fNote').value.trim());
+    fForm.date = date; fForm.sel = $('#fCat').value;
+    toast(`${fForm.kind === 'in' ? 'Поступление' : 'Трата'} записана в ${dayTitle(date).toLowerCase()}`);
+    renderFinance();
+    return;
+  }
+  if (t.dataset.delFin) { delFinEntry(t.dataset.iso, t.dataset.delFin); renderFinance(); return; }
+  if (t.dataset.addcat) {
+    const g = t.dataset.addcat, inp = $(`[data-newcat="${g}"]`), name = inp.value.trim();
+    if (!name) { inp.focus(); return; }
+    const cats = getFinCats();
+    if (cats[g].includes(name)) { toast('Такая статья уже есть'); return; }
+    cats[g].push(name); saveFinCats(cats); haptic.tap(); renderFinance();
+    return;
+  }
+  if (t.dataset.delCat) {
+    const g = t.dataset.delCat, c = t.dataset.cat;
+    if (!await ask(`Убрать статью «${c}» из раздела «${FGROUPS[g]}»? Уже сделанные записи останутся.`)) return;
+    const cats = getFinCats(); cats[g] = cats[g].filter(x => x !== c); saveFinCats(cats); renderFinance();
+  }
+});
+
+/* «Финансы дня» на странице дня — те же записи */
+const dfForm = { kind: 'out' };
+function renderDayFin() {
+  const iso = nav.day, d = getDay(iso), list = (d.fin || []).map(e => ({ ...e, iso }));
+  const out = list.filter(e => e.g !== 'inc').reduce((s, e) => s + e.sum, 0), inc = list.filter(e => e.g === 'inc').reduce((s, e) => s + e.sum, 0);
+  $('#dFin').innerHTML = (list.length ? list.map(e => entryRow(e, false)).join('')
+      + `<p class="meta" style="margin:8px 0 0">За день: ${out ? `<span class="fe-sum out">−${rub(out)}</span>` : ''}${out && inc ? ' · ' : ''}${inc ? `<span class="fe-sum in">+${rub(inc)}</span>` : ''}</p>` : '<p class="empty-line">Трат и поступлений нет</p>')
+    + `<div class="fform" style="margin-top:10px"><div class="seg"><button data-dfkind="out" class="${dfForm.kind === 'out' ? 'on' : ''}">− Трата</button><button data-dfkind="in" class="${dfForm.kind === 'in' ? 'on' : ''}">+ Поступление</button></div>`
+    + `<div class="frow2"><input type="number" id="dfSum" class="fin-in" style="max-width:none" inputmode="decimal" min="0" placeholder="Сумма, ₽" aria-label="Сумма"><select id="dfCat" aria-label="Статья">${finOptions(dfForm.kind, getFinCats(), '')}</select></div>`
+    + `<div class="add" style="margin:0"><input type="text" id="dfNote" placeholder="Примечание" spellcheck="false" autocorrect="off"><button type="button" id="dfAdd" aria-label="Добавить запись">+</button></div></div>`;
+}
+$('#dFin').addEventListener('click', e => {
+  const t = e.target.closest('button');
+  if (!t) return;
+  if (t.dataset.dfkind) { dfForm.kind = t.dataset.dfkind; haptic.tap(); renderDayFin(); return; }
+  if (t.dataset.delFin) { delFinEntry(nav.day, t.dataset.delFin); renderDayFin(); return; }
+  if (t.id === 'dfAdd') {
+    const sum = Math.round((+$('#dfSum').value || 0) * 100) / 100;
+    if (!(sum > 0)) { toast('Введите сумму'); $('#dfSum').focus(); return; }
+    addFinEntry(nav.day, $('#dfCat').value, sum, $('#dfNote').value.trim());
+    renderDayFin();
+  }
+});
+$('#dFin').addEventListener('keydown', e => { if (e.key === 'Enter' && (e.target.id === 'dfSum' || e.target.id === 'dfNote')) { e.preventDefault(); $('#dfAdd').click(); } });
+
 /* ================= Поиск по дневнику ================= */
 function renderSearch() {
   const q = $('#qInput').value.trim().toLowerCase(), box = $('#qRes');
@@ -3053,7 +3343,7 @@ Store.on(what => {
     if (top === 'idea') { if (!document.activeElement || !document.activeElement.closest('#scr-idea input, #scr-idea textarea')) renderIdeaBits(); return; }
     if (top === 'goal') { if (!document.activeElement || !document.activeElement.closest('#scr-goal input, #scr-goal textarea')) renderGoalEd(); return; }
     // не перерисовываем страницу дня, пока в ней что-то печатают
-    if (document.activeElement && document.activeElement.closest('#scr-day input, #scr-day textarea, #scr-habits input')) return;
+    if (document.activeElement && document.activeElement.closest('#scr-day input, #scr-day textarea, #scr-day select, #scr-habits input, #scr-fin input, #scr-fin select, #scr-calendar input, #scr-calendar textarea')) return;
     render();
   }
 });
